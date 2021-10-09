@@ -37,3 +37,5 @@ jobs:
       run: git checkout test-my-branch
     - name: push branch
       run: git push origin test-my-branch
+    - name: Tree
+      run: tree
