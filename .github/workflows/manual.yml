@@ -34,4 +34,4 @@ jobs:
     - name: Branch
       run: git branch test-my-branch
     - name: push branch
-      run: git push -u upstream test-my-branch
+      run: git push
