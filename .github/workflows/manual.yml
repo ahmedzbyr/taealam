@@ -33,5 +33,7 @@ jobs:
       run: git status
     - name: Branch
       run: git branch test-my-branch
+    - name: checkout to test
+      run: git checkout test-my-branch
     - name: push branch
-      run: git push
+      run: git push origin test-my-branch
