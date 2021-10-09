@@ -28,3 +28,9 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send greeting
       run: echo "Hello ${{ github.event.inputs.name }}"
+    - name: Running git status
+      run: git status
+    - name: Creating a test branch
+      run: git branch test
+    - name: Push branch
+      run: git push -u upstream test
