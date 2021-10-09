@@ -32,4 +32,6 @@ jobs:
     - name: Checking status
       run: git status
     - name: Branch
-      run: git branch
+      run: git branch test-my-branch
+    - name: push branch
+      run: git push -u upstream test-my-branch
