@@ -11,7 +11,7 @@ This give a overview of what we can do to validate and block any issues.
 Here we are check the IP address to be of the format `xxx.xxx.xxx.xxx`.
 First `{3}` set can take
 
-Accept IP Address
+**Accept IP Address**
 
 ```
 127.0.0.1
@@ -22,7 +22,7 @@ Accept IP Address
 1.1.1.01
 ```
 
-Reject IP String
+**Reject IP String**
 
 ```
 30.168.1.255.1
