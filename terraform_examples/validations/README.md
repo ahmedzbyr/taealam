@@ -1,15 +1,15 @@
 # Terraform Validations
 
-Validations are a great way to capture errors before we start creating plan for the infrastructure. 
-Some of the issues might also get affect further down the line during apply causing unnecessary issue to the infrastructure. 
+Validations are a great way to capture errors before we start creating plan for the infrastructure.
+Some of the issues might also get affect further down the line during apply causing unnecessary issue to the infrastructure.
 
-Below are few of the validations which can help during the terraform module creation. 
-This give a overview of what we can do to validate and block any issues. 
+Below are few of the validations which can help during the terraform module creation.
+This give a overview of what we can do to validate and block any issues.
 
 ## IP Address validation for a variable
 
-Here we are check the IP address to be of the format `xxx.xxx.xxx.xxx`. 
-First `{3}` set can take 
+Here we are check the IP address to be of the format `xxx.xxx.xxx.xxx`.
+First `{3}` set can take
 
 Accept IP Address
 
@@ -22,7 +22,7 @@ Accept IP Address
 1.1.1.01
 ```
 
-Reject IP String 
+Reject IP String
 
 ```
 30.168.1.255.1
@@ -44,9 +44,9 @@ variable "ip_address" {
 }
 ```
 
-## Cron Schedule Syntax Validation 
+##  Cron Schedule Syntax Validation
 
-Validating cron schdule timer. 
+Validating cron schdule timer.
 
 **Accepts**
 
@@ -75,9 +75,9 @@ variable "cron_schedule" {
 }
 ```
 
-## Checking for keys in a map
+##  Checking for keys in a map
 
-Check the keys present on the map. 
+Check the keys present on the map.
 
 ```hcl
 # Validation keys in a map
@@ -97,7 +97,7 @@ variable "access_map" {
 }
 ```
 
-## Validating list of options for a string variable
+##  Validating list of options for a string variable
 
 ```hcl
 # Validation for list of options for a variable 
