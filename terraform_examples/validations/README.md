@@ -112,3 +112,6 @@ variable "location" {
   }
 }
 ```
+
+There are many function which are available in terraform which can be used to make the module handle different senarios. 
+- [Terraform Functions](https://developer.hashicorp.com/terraform/language/functions)
