@@ -3,20 +3,19 @@
 Cloud assert inventory can be used to pull data from the all the resource from the project.
 Also this can be used to pull data from multiple projects from a parent project.
 
-This helps in getting information about the new resources  which are being created on the project and can help in analysis on the project utilization and security information about the resource **Example**: If there are backups enabled on a cloudSQL resource in a production project and can be used to answer many more questions. 
+This helps in getting information about the new resources  which are being created on the project and can help in analysis on the project utilization and security information about the resource **Example**: If there are backups enabled on a cloudSQL resource in a production project and can be used to answer many more questions.
 
-This post is a basic information on how to pull data, we will add multi-threading in the later posts to the API, which will help pull data from multiple projects at once. 
+This post is a basic information on how to pull data, we will add multi-threading in the later posts to the API, which will help pull data from multiple projects at once.
 
-## API Information
+##  API Information
 
 We will be using the `export_assets` method to pull all the information from the resources.
 
 - [`export_assets` Cloud Asset_v1 Export.](https://cloud.google.com/python/docs/reference/cloudasset/latest/google.cloud.asset_v1.services.asset_service.AssetServiceClient#google_cloud_asset_v1_services_asset_service_AssetServiceClient_export_assets)
 
+### `OutputConfig`
 
-### `OutputConfig` 
-
-API expect an `OutputConfig` which can then output the information in GCS bucket or a bigquery table. 
+API expect an `OutputConfig` which can then output the information in GCS bucket or a bigquery table.
 
 | Name | Description |
 |-|-|
@@ -34,7 +33,7 @@ API expect an `OutputConfig` which can then output the information in GCS bucket
   - `force` - overwrite existing table.  
   - `separate_tables_per_asset_type`.
 
-### `export_assets` API takes below information for it to process the request. 
+### `export_assets` API takes below information for it to process the request
 
 | Name       | Description                                                                                                                                                                                                   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -43,32 +42,31 @@ API expect an `OutputConfig` which can then output the information in GCS bucket
 | `timeout`  | `float` The timeout for this request.                                                                                                                                                                         |
 | `metadata` | `Sequence[Tuple[str, str]]` Strings which should be sent along with the request as metadata.                                                                                                                  |
 
-
-### `request` take `ExportAssetsRequest` Object.
+###  `request` take `ExportAssetsRequest` Object.
 
 | Name | Description |
 |-|-|
 | `parent` | `str` **Required**. The relative name of the root asset. This can only be an organization number (such as "organizations/123"), a project ID (such as "projects/my-project-id"), or a project number (such as "projects/12345"), or a folder number (such as "folders/123"). |
 | `read_time` | `google.protobuf.timestamp_pb2.Timestamp` Timestamp to take an asset **snapshot**. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not specified, the current time will be used. Due to delays in resource data collection and indexing, there is a volatile window during which running the same query may get different results. |
-| `asset_types` | `MutableSequence[str]` A list of asset types to take a snapshot for. For example: "compute.googleapis.com/Disk". Regular expressions are also supported. For example: - "compute.googleapis.com.*" snapshots resources whose asset type starts with "compute.googleapis.com". - ".*Instance" snapshots resources whose asset type ends with "Instance". - ".*Instance.*" snapshots resources whose asset type contains "Instance". See `RE2 `__ for all supported regular expression syntax. If the regular expression does not match any supported asset type, an INVALID_ARGUMENT error will be returned. If specified, only matching assets will be returned, otherwise, it will snapshot all asset types. See `Introduction to Cloud Asset Inventory |
+| `asset_types` | `MutableSequence[str]` A list of asset types to take a snapshot for. For example: "compute.googleapis.com/Disk". Regular expressions are also supported. For example: - "compute.googleapis.com.*" snapshots resources whose asset type starts with "compute.googleapis.com". - ".*Instance" snapshots resources whose asset type ends with "Instance". - ".*Instance.*" snapshots resources whose asset type contains "Instance". See `RE2`__ for all supported regular expression syntax. If the regular expression does not match any supported asset type, an INVALID_ARGUMENT error will be returned. If specified, only matching assets will be returned, otherwise, it will snapshot all asset types. See `Introduction to Cloud Asset Inventory |
 | `content_type` | [`google.cloud.asset_v1.types.ContentType`](https://cloud.google.com/python/docs/reference/cloudasset/latest/google.cloud.asset_v1.types.ContentType) Asset content type. If not specified, no content but the asset name will be returned. |
 | `output_config` | [`google.cloud.asset_v1.types.OutputConfig`](https://cloud.google.com/python/docs/reference/cloudasset/latest/google.cloud.asset_v1.types.OutputConfig) Required. Output configuration indicating where the results will be output to. |
 | `relationship_types` | `MutableSequence[str]` A list of relationship types to export, for example: `INSTANCE_TO_INSTANCEGROUP`. This field should only be specified if content_type=RELATIONSHIP. - If specified: it snapshots specified relationships. It returns an error if any of the [relationship_types] doesn't belong to the supported relationship types of the [asset_types] or if any of the [asset_types] doesn't belong to the source types of the [relationship_types]. - Otherwise: it snapshots the supported relationships for all [asset_types] or returns an error if any of the [asset_types] has no relationship support. An unspecified asset types field means all supported asset_types. See `Introduction to Cloud Asset Inventory |
 
-- `operation = client.export_assets(request=request)` will return the Operations `google.api_core.operation.Operation` object. 
-- This can be used to check for the progress of the operation. 
+- `operation = client.export_assets(request=request)` will return the Operations `google.api_core.operation.Operation` object.
+- This can be used to check for the progress of the operation.
 
-## IAM Requirement for CAI Python script.
+##  IAM Requirement for CAI Python script.
 
-We need to do below steps before we can run the script. 
+We need to do below steps before we can run the script.
 
 1. Enable the cloud assert inventory API on the project.
-2. Create a service account which will run this script. 
+2. Create a service account which will run this script.
 3. Assign `roles/cloudasset.viewer` permission on the service account.
-4. Create a GCE instance with the service account created in step 2. 
-5. Run the script on the GCE instance. 
+4. Create a GCE instance with the service account created in step 2.
+5. Run the script on the GCE instance.
 
-## Python sample script `Storage Bucket`.
+##  Python sample script `Storage Bucket`.
 
 ```python
 from google.cloud import asset_v1
@@ -108,8 +106,7 @@ if __name__ == '__main__':
     export_to_gcs_bucket
 ```
 
-## Python sample script `BigQuery Table`.
-
+##  Python sample script `BigQuery Table`.
 
 ```python
 from google.cloud import asset_v1
