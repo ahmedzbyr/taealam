@@ -60,11 +60,98 @@ API expect an `OutputConfig` which can then output the information in GCS bucket
 
 We need to do below steps before we can run the script.
 
-1. Enable the cloud assert inventory API on the project.
-2. Create a service account which will run this script.
-3. Assign `roles/cloudasset.viewer` permission on the service account.
-4. Create a GCE instance with the service account created in step 2.
-5. Run the script on the GCE instance.
+### Before you begin
+
+To get the permissions that you need to Create VMs that use service accounts, grant yourself IAM roles on your project.
+
+- Compute Instance Admin (v1) (`roles/compute.instanceAdmin.v1`)
+- Create Service Accounts (`roles/iam.serviceAccountCreator`)
+
+### 1. Create a service account which will run this script.
+
+```sh
+gcloud iam service-accounts create sa-cai-export-inventory --description="SA for Cloud Asset Inventory export"  --display-name="SA CAI Export"
+```
+
+
+### 2. Enable the cloud assert inventory API on the project.
+
+- Enable the CAI API on the google console.
+- Once this is done then we can assign the required permissions to the service accoutn created in Step 1. 
+
+### 3. Assign `roles/cloudasset.viewer` permission on the service account.
+
+
+```sh
+gcloud projects add-iam-policy-binding PROJECT_ID --member="serviceAccount:sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com" --role="roles/cloudasset.viewer"
+```
+
+```sh
+gcloud iam service-accounts add-iam-policy-binding sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com --member="user:USER_EMAIL" --role="roles/iam.serviceAccountUser"
+```
+
+### 4. Create a GCE instance with the service account created in step 1.
+
+To create a GCE we will need the below command.
+
+```sh
+gcloud compute instances create cai-vm-node --service-account=sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/cloud-platform
+```
+
+Better way to do this would be using the terraform.
+
+```hcl
+resource "google_compute_instance" "default" {
+  name         = "cai-vm-node"
+  machine_type = "n1-standard-1"
+  zone         = "us-central1-a"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+
+  // Local SSD disk
+  scratch_disk {
+    interface = "SCSI"
+  }
+
+  network_interface {
+    network = "default"
+  }
+
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+}
+```
+
+
+### 5. Run the script on the GCE instance.
+
+Once the instance is created then we can logon to the node using below command.
+
+```sh
+gcloud compute ssh cai-vm-node --zone="us-central1-a" --project PROJECT_ID --internal-ip 
+```
+
+Once you have login to the node then we can create a python venv and run the scripts. 
+This will then use the service account which has the permission to get all the data from the project. 
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirement.txt
+
+# Update the bucket / bigquery information in the script
+python cai_gcs_bucket.py
+```
 
 ##  Python sample script `Storage Bucket`.
 
