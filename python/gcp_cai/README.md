@@ -42,7 +42,7 @@ API expect an `OutputConfig` which can then output the information in GCS bucket
 | `timeout`  | `float` The timeout for this request.                                                                                                                                                                         |
 | `metadata` | `Sequence[Tuple[str, str]]` Strings which should be sent along with the request as metadata.                                                                                                                  |
 
-###  `request` take `ExportAssetsRequest` Object.
+###  `request` take `ExportAssetsRequest` Object
 
 | Name | Description |
 |-|-|
@@ -56,31 +56,29 @@ API expect an `OutputConfig` which can then output the information in GCS bucket
 - `operation = client.export_assets(request=request)` will return the Operations `google.api_core.operation.Operation` object.
 - This can be used to check for the progress of the operation.
 
-##  IAM Requirement for CAI Python script.
+##  IAM Requirement for CAI Python script
 
 We need to do below steps before we can run the script.
 
-### Before you begin
+###  Before you begin
 
 To get the permissions that you need to Create VMs that use service accounts, grant yourself IAM roles on your project.
 
 - Compute Instance Admin (v1) (`roles/compute.instanceAdmin.v1`)
 - Create Service Accounts (`roles/iam.serviceAccountCreator`)
 
-### 1. Create a service account which will run this script.
+### 1. Create a service account which will run this script
 
 ```sh
 gcloud iam service-accounts create sa-cai-export-inventory --description="SA for Cloud Asset Inventory export"  --display-name="SA CAI Export"
 ```
 
-
-### 2. Enable the cloud assert inventory API on the project.
+### 2. Enable the cloud assert inventory API on the project
 
 - Enable the CAI API on the google console.
-- Once this is done then we can assign the required permissions to the service accoutn created in Step 1. 
+- Once this is done then we can assign the required permissions to the service accoutn created in Step 1.
 
-### 3. Assign `roles/cloudasset.viewer` permission on the service account.
-
+### 3. Assign `roles/cloudasset.viewer` permission on the service account
 
 ```sh
 gcloud projects add-iam-policy-binding PROJECT_ID --member="serviceAccount:sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com" --role="roles/cloudasset.viewer"
@@ -90,7 +88,7 @@ gcloud projects add-iam-policy-binding PROJECT_ID --member="serviceAccount:sa-ca
 gcloud iam service-accounts add-iam-policy-binding sa-cai-export-inventory@PROJECT_ID.iam.gserviceaccount.com --member="user:USER_EMAIL" --role="roles/iam.serviceAccountUser"
 ```
 
-### 4. Create a GCE instance with the service account created in step 1.
+### 4. Create a GCE instance with the service account created in step 1
 
 To create a GCE we will need the below command.
 
@@ -132,8 +130,7 @@ resource "google_compute_instance" "default" {
 }
 ```
 
-
-### 5. Run the script on the GCE instance.
+### 5. Run the script on the GCE instance
 
 Once the instance is created then we can logon to the node using below command.
 
@@ -141,8 +138,8 @@ Once the instance is created then we can logon to the node using below command.
 gcloud compute ssh cai-vm-node --zone="us-central1-a" --project PROJECT_ID --internal-ip 
 ```
 
-Once you have login to the node then we can create a python venv and run the scripts. 
-This will then use the service account which has the permission to get all the data from the project. 
+Once you have login to the node then we can create a python venv and run the scripts.
+This will then use the service account which has the permission to get all the data from the project.
 
 ```sh
 python3 -m venv .venv
@@ -153,7 +150,7 @@ pip install -r requirement.txt
 python cai_gcs_bucket.py
 ```
 
-##  Python sample script `Storage Bucket`.
+##  Python sample script `Storage Bucket`
 
 ```python
 from google.cloud import asset_v1
@@ -193,7 +190,7 @@ if __name__ == '__main__':
     export_to_gcs_bucket
 ```
 
-##  Python sample script `BigQuery Table`.
+##  Python sample script `BigQuery Table`
 
 ```python
 from google.cloud import asset_v1
