@@ -31,9 +31,9 @@ Understanding key concepts related to access management is essential:
 - **Resource**: A resource is a GCP entity to which access is required, such as a Google Cloud Storage (GCS) bucket, a Google Compute Engine (GCE) instance, or a BigQuery dataset.
 - **Permissions**: Permissions dictate what operations are allowed on a resource. For instance, `roles/storage.admin` grants administrative permissions for a GCS bucket, while `roles/compute.instanceAdmin` provides administrative access to a GCE instance.
 - **Roles**: Roles are predefined or custom collections of permissions.
-  - **Basic Roles**: These legacy roles include Owner, Editor, and Viewer, which are not recommended for fine-grained access control.
+  - **Basic Roles**: :warning: [**Not Recommended**] These legacy roles include Owner, Editor, and Viewer, which are not recommended for fine-grained access control.
   - **Predefined Roles**: These roles offer more granular access control than the basic roles.
-  - **Custom Roles**: Custom roles can be created to tailor permissions to your organization's specific needs.
+  - **Custom Roles**: [**Recommended**] Custom roles can be created to tailor permissions to your organization's specific needs.
 
 ## Implementing IAM in Terraform Modules
 
