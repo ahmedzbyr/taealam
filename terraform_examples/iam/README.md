@@ -86,11 +86,11 @@ In the above example we are creating a design in which we create a bucket and th
 
 Variable `access_permissions` will be a list which takes `service_account`, `group`, `permission` as the keys for the list of maps inside it.
 
-## Bucket Module.
+## Bucket Module.
 
 :books: **NOTE**: These file are created in `module` directory.
 
-### Creating Variable `module/variables.tf`
+### Creating Variable `module/variables.tf`
 
 First we will be creating variables for our module which take information from the consumer and do few inital validations.
 Also add proper `description`, `type` and `defaults` as this will come in handy when we generate the `README.md` using `terraform-docs`.
@@ -145,7 +145,7 @@ variable "access_permissions" {
 }
 ```
 
-### Bucket Resource `module/main.tf`
+### Bucket Resource `module/main.tf`
 
 Next we will create a simple bucket resource, which creates a bucket.
 
@@ -158,7 +158,7 @@ resource "google_storage_bucket" "create_new_bucket" {
 }
 ```
 
-### IAM permissions for Bucket `module/iam.tf`
+### IAM permissions for Bucket `module/iam.tf`
 
 In this file we will create a mapping and assign `NON Authoritative` permissions to the bucket using `google_storage_bucket_iam_member`.
 
@@ -262,11 +262,11 @@ resource "google_storage_bucket_iam_member" "group_permission" {
 }
 ```
 
-## Consumer or End User.
+## Consumer or End User.
 
 :books: **NOTE**: These file are created in `consumer` directory.
 
-### Creating the `consumer_module/main.tf`
+### Creating the `consumer_module/main.tf`
 
 Creating a file which will use the module created above.
 
