@@ -1,61 +1,47 @@
-One of the most important part of the setting up any resource in cloud or on-prem is to have security around it.
-Security can be implemented in different scales, be it in network (firewall, natting, routing), encryption (encryption-at-rest, encryption-in-transit), Access control (kerberos, role based access control aka RBAC).
+# Design IAM on Google Cloud Platform
 
-But in general cybersecurity has 7 layers of security.
+Security is paramount when setting up resources in the cloud or on-premises. It encompasses various layers of protection, including network security, encryption, access control, and more. In the realm of cybersecurity, there are seven critical layers of security:
 
-1. Critical Assets.
-2. Data Security
-3. Application Security
-4. Endpoint Security
-5. Network
-6. Perimeter
-7. Human
+1. **Critical Assets**
+2. **Data Security**
+3. **Application Security**
+4. **Endpoint Security**
+5. **Network**
+6. **Perimeter**
+7. **Human**
 
-### Application Security
+In this post, we will delve into one of these security layers, namely **Application Security**, focusing on Google Cloud Platform (GCP). Specifically, we will explore Identity & Access Management (IAM) in GCP, a fundamental aspect of application security. IAM plays a pivotal role in ensuring that the right users or entities have the appropriate level of access, adhering to the principle of least privilege.
 
-Applications security controls protect access to an application, an application’s access to your mission critical assets, and the internal security of the application.
+## What is IAM?
 
-This post will be about one of the security measured (**Application Security**) on Cloud called IAM (Identity & Access Management) specific to **GCP** resource.
-One of the core rules of IAM is to give access only _what is required_ not more.
+**Identity and Access Management (IAM)** in Google Cloud allows administrators to control and authorize actions on specific resources, providing comprehensive control and visibility over GCP resources. IAM offers tools to manage resource permissions with minimal complexity, using both Terraform resources and APIs. It enables granular, context-aware access control and simplifies compliance with built-in audit trails.
 
-### In this post
+## The Components of IAM
 
-- We will create a design to generize the IAM information a given module.
-- Create a template to setup IAM for a given resource using terraform.
-- How we can incorporate IAM into modules.
+In IAM, three primary components work together:
 
-### Why is it Important?
+1. **Principal**: These are entities like users, groups, or service accounts.
+2. **Role**: Roles are collections of permissions.
+3. **Policy**: Policies are collections of role bindings that associate one or more principals with specific roles.
 
-- This help is improving security around the resource.
-- Give minimum access required to the Purpose the access was create.
+## Access Management Concepts
 
-### What is the IAM?
+Understanding key concepts related to access management is essential:
 
-- Identity and Access Management (IAM) lets administrators authorize who can take action on specific resources, giving you full control and visibility to manage Google Cloud resources centrally.
-- IAM provides tools to manage resource permissions with minimum fuss and high automation, using the terraform resource and APIs.
-- Get granular with context-aware access to each resource.
-- Streamline compliance with a built-in audit trails.
+- **Resource**: A resource is a GCP entity to which access is required, such as a Google Cloud Storage (GCS) bucket, a Google Compute Engine (GCE) instance, or a BigQuery dataset.
+- **Permissions**: Permissions dictate what operations are allowed on a resource. For instance, `roles/storage.admin` grants administrative permissions for a GCS bucket, while `roles/compute.instanceAdmin` provides administrative access to a GCE instance.
+- **Roles**: Roles are predefined or custom collections of permissions.
+  - **Basic Roles**: These legacy roles include Owner, Editor, and Viewer, which are not recommended for fine-grained access control.
+  - **Predefined Roles**: These roles offer more granular access control than the basic roles.
+  - **Custom Roles**: Custom roles can be created to tailor permissions to your organization's specific needs.
 
-### How does IAM work?
+## Implementing IAM in Terraform Modules
 
-- In General IAM has three main parts
-  - **Principal**: user, group or service account.
-  - **Role**: Collection of permissions.
-  - **Policy**: Collection of role bindings that bind one or more principals to individual roles.
-- Concepts related to access management
-  - Resource: Cloud resource which we require the access on, example GCS bucket, GCE Instance, Bigquery Dataset are few examples of a resource.
-  - Permissions: Permissions determine what operations are allowed on a resource. Example: `roles/storage.admin` for a GCS bucket, `roles/compute.instanceAdmin` for a GCE Instance, both give Admin permissions on the resource.
-  - Roles: A role is a collection of permissions.
-    - **Basic Roles**: :warning: [**NOT Recommended**] Roles historically available in the Google Cloud console. These roles are Owner, Editor, and Viewer.
-    - **Predefined Roles**: Roles that give finer-grained access control than the basic roles.
-    - **Custom Role**: [**Recommended**] Roles that you create to tailor permissions to the needs of your organization when predefined roles don't meet your needs.
+Now, let's explore how to operationalize IAM in Terraform modules, making it easier to manage access permissions for different resources.
 
-## Setting IAM in Terraform Modules
+### Designing the Workflow
 
-Before we get started we need to design the workflow so that we can generalize the IAM for different resource.
-Below is an example on how we would like end user to use or assign the IAM.
-
-For our design we will restrict access to service_account and groups only. This is a good access restriction to start with, this will have access to specific service accounts and groups to which users can get access to using the access controls. Also this is an easy way manage access to a resource.
+To ensure a standardized approach to IAM across various resources, it's beneficial to design a workflow that simplifies IAM assignment. We'll focus on a design where we create a resource and assign permissions to it. Here's an example using a Google Cloud Storage (GCS) bucket:
 
 ```hcl
 module "gcs_bucket_creation" {
@@ -65,7 +51,7 @@ module "gcs_bucket_creation" {
   location      = "US"
   storage_class = "MULTI_REGIONAL"
 
-  # Access permissions on the resource created
+  # Access permissions on the resource created
   access_permissions = [
     {
       service_account = "my-sa-1@gcs.iam.gserviceaccount.com"
@@ -79,18 +65,19 @@ module "gcs_bucket_creation" {
 }
 ```
 
-In the above example we are creating a design in which we create a bucket and then assign permissions to the bucket.
-
 | :books: :warning: NOTE: We need to run this terraform from a elevated service account which has permissions to create buckets and assign IAM. |
 | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 
-Variable `access_permissions` will be a list which takes `service_account`, `group`, `permission` as the keys for the list of maps inside it.
+In this example, we create a GCS bucket named "my-bucket-123" and assign permissions to it. The `access_permissions` variable is a list containing maps with keys such as `service_account`, `group`, and `permission`.
 
 ## Bucket Module.
 
+Now, let's create a Terraform module to encapsulate the GCS bucket creation and IAM assignment logic.
 :books: **NOTE**: These file are created in `module` directory.
 
 ### Creating Variable `module/variables.tf`
+
+Define variables that allow users to provide input while ensuring proper validation and documentation:
 
 First we will be creating variables for our module which take information from the consumer and do few inital validations.
 Also add proper `description`, `type` and `defaults` as this will come in handy when we generate the `README.md` using `terraform-docs`.
@@ -147,7 +134,7 @@ variable "access_permissions" {
 
 ### Bucket Resource `module/main.tf`
 
-Next we will create a simple bucket resource, which creates a bucket.
+Now, create the GCS bucket resource:
 
 ```hcl
 resource "google_storage_bucket" "create_new_bucket" {
@@ -160,7 +147,7 @@ resource "google_storage_bucket" "create_new_bucket" {
 
 ### IAM permissions for Bucket `module/iam.tf`
 
-In this file we will create a mapping and assign `NON Authoritative` permissions to the bucket using `google_storage_bucket_iam_member`.
+In this file, we'll define IAM permissions and roles based on user input. We'll map access permissions to predefined roles and create bindings.
 
 - First part, creating a map.
 
@@ -292,7 +279,11 @@ module "gcs_bucket_creation" {
 }
 ```
 
-Running the above module will yeild the below output. All the list of permissions are added and mapped automatically to what we have defined. This will create a nicer interface to the user and we can then change these updates to a custom role later on the project lifecycle.
+## Implementation and Usage
+
+By organizing your IAM configurations in Terraform modules, you can create a cleaner and more user-friendly interface for managing access permissions. Users can easily specify the required permissions and resources without needing in-depth knowledge of IAM roles and policies.
+
+Running the module example provided earlier will generate output that automatically maps the permissions defined in `access_permissions` to their corresponding IAM roles. This approach streamlines IAM management and provides a foundation that can be adapted and extended as your project evolves.
 
 ```hcl
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
