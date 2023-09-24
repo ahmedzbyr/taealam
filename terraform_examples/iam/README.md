@@ -1,4 +1,4 @@
-# Design IAM on Google Cloud Platform
+# Design IAM on Google Cloud Platform
 
 Security is paramount when setting up resources in the cloud or on-premises. It encompasses various layers of protection, including network security, encryption, access control, and more. In the realm of cybersecurity, there are seven critical layers of security:
 
