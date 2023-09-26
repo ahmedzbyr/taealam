@@ -1,4 +1,4 @@
-# Automating Google Compute Engine (GCE) Instance Setup with Ansible
+# Google Compute Engine (GCE) Instance with Ansible
 
 Using Ansible within the initialization script of a Google Compute Engine (GCE) instance can streamline and automate the configuration and setup of your virtual machines. In this guide, we will walk through the steps to achieve this process.
 
