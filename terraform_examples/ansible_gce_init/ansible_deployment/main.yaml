@@ -1,11 +1,8 @@
 ---
-- name: "Configure the Host"
+- name: Configure GCE Instance
   hosts: all
-  gather_facts: yes
   tasks:
-    - name: Manage instance 
-      shell: |
-        server_name=`hostname`
-        echo "Service name: ${server_name}, And this is what we have on this."
-      register: output
-    - debug: ouput.stdout_lines
+    - name: Ensure a package is installed
+      apt:
+        name: nginx
+        state: present

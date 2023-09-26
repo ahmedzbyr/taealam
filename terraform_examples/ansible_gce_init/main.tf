@@ -27,7 +27,7 @@ resource "google_compute_instance" "main" {
     auto_delete = true
     device_name = "ahmed-instance-1"
     initialize_params {
-      image = "projects/debian-cloud/global/images/debian-11-bullseye-v20230912"
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20230918"
       size  = 10
       type  = "pd-balanced"
     }
@@ -72,7 +72,18 @@ resource "google_compute_instance" "main" {
   #     username:public_key
   #
   metadata = {
-    "ssh-keys" = "ubuntu:${tls_private_key.main.public_key_openssh}"
+    "ssh-keys" = "root:${tls_private_key.main.public_key_openssh}"
+  }
+
+  provisioner "file" {
+    source      = "./ansible_deployment"
+    destination = "/root/"
+    connection {
+      type        = "ssh"
+      host        = google_compute_instance.main.network_interface.0.access_config.0.nat_ip
+      user        = "root"
+      private_key = tls_private_key.main.private_key_openssh
+    }
   }
 }
 
@@ -82,24 +93,25 @@ resource "null_resource" "remote_example" {
   provisioner "remote-exec" {
     inline = [
       "#!/bin/bash",
-      "sudo apt-get update",
-      "sudo mkdir -p /root/.ssh/",
-      "sudo ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa <<<y >/dev/null 2>&1",
-      "sudo cat /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys",
-      #   "sudo chmod 700 /root/.ssh",
-      #   "sudo chmod 600 /root/.ssh/id_rsa",
-      #   "sudo chmod 644 /root/.ssh/id_rsa.pub",
-      #   "sudo chmod 600 /root/.ssh/authorized_keys",
-      "sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin\\ yes/g' /etc/ssh/ssh_config",
-      "sudo systemctl restart ssh",
-      "sudo apt-get install -y ansible",
-      "sudo echo -e '[defaults]\\nhost_key_checking = False' > /etc/ansible/ansible.cfg",
+      "mkdir -p /root/.ssh/",
+      "ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa <<<y >/dev/null 2>&1",
+      "cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys",
+      "chmod 700 /root/.ssh",
+      "chmod 600 /root/.ssh/id_rsa",
+      "chmod 644 /root/.ssh/id_rsa.pub",
+      "chmod 600 /root/.ssh/authorized_keys",
+      "sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/ssh_config",
+      "systemctl restart ssh",
+      "apt-add-repository ppa:ansible/ansible -y",
+      "apt-get update",
+      "apt-get install -y ansible",
+      "echo -e '[defaults]\\nhost_key_checking = False' > /etc/ansible/ansible.cfg",
     ]
   }
   connection {
     type        = "ssh"
     host        = google_compute_instance.main.network_interface.0.access_config.0.nat_ip
-    user        = "ubuntu"
+    user        = "root"
     private_key = tls_private_key.main.private_key_openssh
   }
 
