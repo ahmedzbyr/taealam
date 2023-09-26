@@ -1,13 +1,16 @@
-Using Ansible in the init script of a Google Compute Engine (GCE) instance can be a powerful way to automate the configuration and setup of your virtual machines. Here are the general steps to achieve this:
+# Automating Google Compute Engine (GCE) Instance Setup with Ansible
 
-### 1. Setting Up Instance
+Using Ansible within the initialization script of a Google Compute Engine (GCE) instance can streamline and automate the configuration and setup of your virtual machines. In this guide, we will walk through the steps to achieve this process.
 
-Before we start we need to setup a GCE instance. We can setup the instance using terraform. And while we are doing so we can setting the configuration on for the node to make sure we have all the components installed. We can do this in 2 ways running an `init` script or using `remote-exec` to execute commands we when to run when the node starts.
+## 1. Setting Up the GCE Instance
 
-To demonstrate the use of `remote-exec` we will be using that in this example. But we can use the `init` script as well.
-In the setup we are initially setting a `ssh` configuration to use `private` keys to access the node. This will also help us to communicate with the service with ansible.
+Before diving into Ansible automation, you need to provision a GCE instance. This can be accomplished using Terraform. While setting up the instance, you can configure it to ensure that all necessary components are installed and configured. There are two primary approaches for this: running an `init` script or using `remote-exec` to execute commands when the node starts.
 
-Here is a snippet on what it would look like.
+In this example, we'll demonstrate using `remote-exec`. However, you can also use an `init` script.
+
+### SSH Configuration
+
+Begin by configuring SSH to use private keys for secure access to the GCE instance. This step is crucial for communication with the service via Ansible. Below is a snippet of what this configuration looks like:
 
 ```shell
 #!/bin/bash
@@ -22,7 +25,9 @@ sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/ssh_config
 systemctl restart ssh
 ```
 
-Next, we install the `ansible` package.
+### Installing Ansible
+
+Next, install the `ansible` package on the GCE instance:
 
 ```shell
 apt-add-repository ppa:ansible/ansible -y
@@ -31,11 +36,11 @@ apt-get install -y ansible
 echo -e '[defaults]\\nhost_key_checking = False' > /etc/ansible/ansible.cfg
 ```
 
-By this point we have the node ready to execute `ansible`.
+By this point, your GCE node is prepared to execute Ansible commands.
 
-### 2. Getting Ansible Deployment Files Ready
+## 2. Creating an Ansible Playbook
 
-Write an Ansible playbook that defines the tasks you want to execute on the GCE instance. For example, you might want to install software, configure system settings, or deploy applications. Save this playbook as a YAML file.
+Now, it's time to write an Ansible playbook that defines the tasks you want to execute on the GCE instance. These tasks can include installing software, configuring system settings, or deploying applications. Save this playbook as a YAML file. Here's a simple example that installs the `nginx` web server:
 
 ```yaml
 ---
@@ -48,16 +53,12 @@ Write an Ansible playbook that defines the tasks you want to execute on the GCE 
         state: present
 ```
 
-This `yaml` installs `nginx` on the node.
+## 3. Copying Ansible Deployment Files
 
-### 3. Copying Ansible Deployment
-
-We do this using the `provisioner` called `file`. This will help us to copy the files from the terraform directory to the `gce` node.
-
-Here is snippet on how it looks like.
+To copy your Ansible deployment files to the GCE instance, utilize the `provisioner` called `file`. This provisioner facilitates the transfer of files from your Terraform directory to the GCE node. Here's an example of how it looks:
 
 ```hcl
-  provisioner "file" {
+provisioner "file" {
     source      = "./ansible_deployment"
     destination = "/root/"
     connection {
@@ -69,20 +70,21 @@ Here is snippet on how it looks like.
   }
 ```
 
-Here `source` is a file or directory, `destination` is where we want on the node. `connection` to connect to the node.
-We are using `metadata` configuration to setup the ssh and copy it using that, we are using the same connect for `remote-exec`.
+In this snippet, `source` points to the local file or directory, `destination` specifies where to place the files on the GCE node, and `connection` defines the SSH connection details.
 
-### 4. Terraform Script
+## 4. Terraform Script
 
-1. The script begins with defining variables, including the `project_id`, which should be replaced with your specific project ID.
-2. It generates an RSA key pair using the `tls_private_key` resource, which will be used for SSH access to the GCE instance.
-3. The `google_compute_instance` resource defines the GCE instance configuration, including its machine type, name, zone, boot disk, networking details, and service account settings.
-4. Within the `metadata` section, it specifies SSH keys for secure access to the instance.
-5. Using the `provisioner "file"`, it copies the Ansible deployment files from your local machine to the GCE instance.
-6. The `null_resource` named `remote_example` uses a `provisioner "remote-exec"` to execute a series of shell commands on the GCE instance. These commands perform various tasks, including setting up SSH keys, installing Ansible, and configuring Ansible settings.
-7. The `depends_on` attribute ensures that the `null_resource` provisioning only starts after the GCE instance is created.
+Here we orchestrates the GCE instance provisioning and Ansible setup. It involves several steps:
 
-This Terraform script provisions a GCE instance, prepares it for Ansible deployment, and installs the necessary software for further configuration.
+1. Defining variables such as `project_id` (replace it with your project ID).
+2. Generating an RSA key pair for SSH access (`tls_private_key` resource).
+3. Configuring the GCE instance (`google_compute_instance` resource) with settings like machine type, zone, and service account.
+4. Setting up SSH access via metadata.
+5. Using `provisioner "file"` to copy Ansible deployment files.
+6. Leveraging a `null_resource` with `provisioner "remote-exec"` to run various shell commands for Ansible setup.
+7. Ensuring proper dependencies between resources.
+
+This script fully prepares the GCE instance for Ansible automation.
 
 ```hcl
 # Project
