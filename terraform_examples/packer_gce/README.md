@@ -1,32 +1,37 @@
-# Automating GCE Image Creation with Packer
+---
+toc: true
+toc_label: "Contents"
+toc_icon: "cog"
+title: Automating GCE Image Creation with Packer
+category: ["GCP"]
+tags: ["terraform", "packer", "gce"]
+header:
+  {
+    overlay_image: /assets/images/unsplash-image-65.jpg,
+    og_image: /assets/images/unsplash-image-65.jpg,
+    caption: "Photo credit: [**Unsplash**](https://unsplash.com)",
+  }
+---
 
-Ensuring consistency and streamlining infrastructure provisioning is crucial for effective cloud management. Creating custom virtual machine (VM) images on Google Compute Engine (GCE) is a powerful way to achieve this. In this guide, we'll explore how to automate the image creation process using two powerful tools: Terraform and Packer.
+Ensuring consistency and streamlining infrastructure provisioning is crucial for effective cloud management. Creating custom virtual machine (VM) images on Google Compute Engine (GCE) is a powerful way to achieve this. In this guide, we'll explore how to automate the image creation process using a powerful tool called `packer`.
 
-**Example**: You can find sample code for this guide on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/ansible_gce_init).
+**Example**: You can find sample code for this guide on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/packer_gce).
 
 ## Prerequisites
 
 Before we dive into the automation process, make sure you have the following prerequisites in place:
 
 1. **Google Cloud Platform (GCP) Account**: You should have a GCP account and a project set up.
-
-2. **Terraform**: Install Terraform on your local machine. You can download it from the official website: [Terraform Downloads](https://www.terraform.io/downloads.html).
-
-3. **Packer**: Install Packer on your local machine. You can download it from the official website: [Packer Downloads](https://www.packer.io/downloads).
+2. **Packer**: Install Packer on your local machine. You can download it from the official website: [Packer Downloads](https://www.packer.io/downloads).
 
 ## Overview
 
 Here's a high-level overview of the steps we'll follow to automate image creation with Terraform and Packer:
 
-1. **Create a Custom VM Instance**: Use Terraform to define and provision a VM instance on GCE. This instance will serve as the basis for your custom image.
-
-2. **Configure Packer**: Create a Packer template in HashiCorp Configuration Language (HCL) format (e.g., `googlecompute.pkr.hcl`) that specifies how your image should be built. This includes details like the source VM instance, image family, and additional provisioning steps.
-
-3. **Build the Custom Image**: Use Packer to build a custom image based on your template (e.g., `build.pkr.hcl`). Packer automates the process of provisioning, configuring, and capturing the image.
-
-4. **Clean Up**: Packer will automatically destroy the temporary VM instance created for image building.
-
-5. **Use Your Custom Image**: Deploy new VMs from your custom image as needed.
+1. **Configure Packer**: Create a Packer template in HashiCorp Configuration Language (HCL) format (e.g., `googlecompute.pkr.hcl`) that specifies how your image should be built. This includes details like the source VM instance, image family, and additional provisioning steps.
+2. **Build the Custom Image**: Use Packer to build a custom image based on your template (e.g., `build.pkr.hcl`). Packer automates the process of provisioning, configuring, and capturing the image.
+3. **Clean Up**: Packer will automatically destroy the temporary VM instance created for image building.
+4. **Use Your Custom Image**: Deploy new VMs from your custom image as needed.
 
 ### What We'll Accomplish in This Post
 
@@ -143,6 +148,12 @@ You can execute various Packer commands to manage the image creation process. He
 When you run the `packer build` command, you'll see an output similar to the following:
 
 ```shell
+┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
+└─▪ packer init .
+Installed plugin github.com/hashicorp/googlecompute v1.1.1 in "/Users/ahmedzbyr/.config/packer/plugins/github.com/hashicorp/googlecompute/packer-plugin-googlecompute_v1.1.1_x5.0_darwin_amd64"
+┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
+└─▪ packer validate .
+The configuration is valid.
 ┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
 └─▪ packer build .
 googlecompute.create-new-custom-image: output will be in this color.
