@@ -1,15 +1,17 @@
-# Setting up GCE Images using Packer
+# Automating GCE Image Creation with Packer
 
-Creating custom virtual machine (VM) images on Google Compute Engine (GCE) can be a powerful way to ensure consistency and streamline your infrastructure provisioning. In this guide, we'll explore how to automate the image creation process using two powerful tools: Terraform and Packer.
+Ensuring consistency and streamlining infrastructure provisioning is crucial for effective cloud management. Creating custom virtual machine (VM) images on Google Compute Engine (GCE) is a powerful way to achieve this. In this guide, we'll explore how to automate the image creation process using two powerful tools: Terraform and Packer.
 
-Example: [Sample Code on Github](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/ansible_gce_init)
+**Example**: You can find sample code for this guide on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/ansible_gce_init).
 
 ## Prerequisites
 
-Before we begin, make sure you have the following prerequisites:
+Before we dive into the automation process, make sure you have the following prerequisites in place:
 
 1. **Google Cloud Platform (GCP) Account**: You should have a GCP account and a project set up.
+
 2. **Terraform**: Install Terraform on your local machine. You can download it from the official website: [Terraform Downloads](https://www.terraform.io/downloads.html).
+
 3. **Packer**: Install Packer on your local machine. You can download it from the official website: [Packer Downloads](https://www.packer.io/downloads).
 
 ## Overview
@@ -17,42 +19,40 @@ Before we begin, make sure you have the following prerequisites:
 Here's a high-level overview of the steps we'll follow to automate image creation with Terraform and Packer:
 
 1. **Create a Custom VM Instance**: Use Terraform to define and provision a VM instance on GCE. This instance will serve as the basis for your custom image.
-2. **Configure Packer**: Create a Packer template HCL `googlecompute.pkr.hcl` file that specifies how your image should be built. This includes details like the source VM instance, image family, and additional provisioning steps.
-3. **Build the Custom Image**: Use Packer to build a custom image based on your template `build.pkr.hcl`. Packer will automate the process of provisioning, configuring, and capturing the image.
+
+2. **Configure Packer**: Create a Packer template in HashiCorp Configuration Language (HCL) format (e.g., `googlecompute.pkr.hcl`) that specifies how your image should be built. This includes details like the source VM instance, image family, and additional provisioning steps.
+
+3. **Build the Custom Image**: Use Packer to build a custom image based on your template (e.g., `build.pkr.hcl`). Packer automates the process of provisioning, configuring, and capturing the image.
+
 4. **Clean Up**: Packer will automatically destroy the temporary VM instance created for image building.
+
 5. **Use Your Custom Image**: Deploy new VMs from your custom image as needed.
 
-### What are we doing this post?
+### What We'll Accomplish in This Post
 
-1. Create a `googlecompute` hcl file which will create the image.
-2. build file to execute a script oon the image
-3. Script to setup application on the image.
+In this guide, we'll create a `googlecompute` HCL file for creating the image, a build file to execute a script on the image, and a script to set up an application on the image. This new image will have all the required configurations and applications, making it ideal for spinning up new GCE instances.
 
-## What is Packer?
+## What Is Packer?
 
-Packer is an open source tool for creating identical machine images for multiple platforms from a single source configuration. Packer is lightweight, runs on every major operating system, and is highly performant, creating machine images for multiple platforms in parallel. Packer does not replace configuration management like Chef or Puppet. In fact, when building images, Packer is able to use tools like Chef or Puppet to install software onto the image.
+[Packer](https://www.packer.io/) is an open-source tool for creating identical machine images for multiple platforms from a single source configuration. It is lightweight, runs on every major operating system, and is highly performant, creating machine images for multiple platforms in parallel. Packer does not replace configuration management tools like Chef or Puppet; instead, it can use these tools to install software onto the image.
 
 ## Why Use Packer?
 
-Pre-baked machine images have a lot of advantages, but most have been unable to benefit from them because images have been too tedious to create and manage. There were either no existing tools to automate the creation of machine images or they had too high of a learning curve. The result is that, prior to Packer, creating machine images threatened the agility of operations teams, and therefore aren't used, despite the massive benefits.
+Packer addresses the challenge of creating machine images in a more streamlined and automated way, offering several benefits:
 
-Packer changes all of this. Packer automates the creation of any type of machine image. It embraces modern configuration management by encouraging you to use a framework such as Chef or Puppet to install and configure the software within your Packer-made images.
+- **Super Fast Infrastructure Deployment**: Packer images enable you to launch fully provisioned and configured machines in seconds, significantly reducing provisioning times for both production and development environments.
 
-In other words: Packer brings pre-baked images into the modern age, unlocking untapped potential and opening new opportunities.
+- **Multi-Provider Portability**: Packer creates identical images for multiple platforms, allowing you to run your application in various environments such as AWS, OpenStack, or desktop virtualization solutions like VMware or VirtualBox.
 
-## Advantages of Using Packer
+- **Improved Stability**: Packer installs and configures all the software for a machine during image creation. This means that any issues or bugs in your configuration scripts are caught early in the process.
 
-Super fast infrastructure deployment. Packer images allow you to launch completely provisioned and configured machines in seconds, rather than several minutes or hours. This benefits not only production, but development as well, since development virtual machines can also be launched in seconds, without waiting for a typically much longer provisioning time.
+- **Greater Testability**: After building a machine image, you can quickly launch and test it to ensure that everything is working as expected. This confidence extends to any future instances launched from the image.
 
-Multi-provider portability. Because Packer creates identical images for multiple platforms, you can run production in AWS, staging/QA in a private cloud like OpenStack, and development in desktop virtualization solutions such as VMware or VirtualBox. Each environment is running an identical machine image, giving ultimate portability.
+Packer modernizes the process of creating and managing machine images, unlocking new possibilities and improving operational agility.
 
-Improved stability. Packer installs and configures all the software for a machine at the time the image is built. If there are bugs in these scripts, they'll be caught early, rather than several minutes after a machine is launched.
+## Step 1: Creating the `googlecompute` HCL Source File
 
-Greater testability. After a machine image is built, that machine image can be quickly launched and smoke tested to verify that things appear to be working. If they are, you can be confident that any other machines launched from that image will function properly.
-
-Packer makes it extremely easy to take advantage of all these benefits.
-
-## Step 1: Creating the `hcl` source file.
+Below is an example `googlecompute` HCL file for creating a custom GCE image. This file specifies various parameters, including the project ID, region, zone, source image, disk size, machine type, image family, and more.
 
 ```hcl
 packer {
@@ -116,73 +116,31 @@ source "googlecompute" "create-new-custom-image" {
 }
 ```
 
-## Step 2. Build file to execute a script oon the image
+## Step 2: Build File to Execute a Script on the Image
 
-This file contains the dources to be build and the script which needs to be executed on the image, once the script is executed successfully a new fresh image is created with the include configurations, applications in the script provided.
-
-Now the new image will have all the required configuration and this can then be used to build new GCE instance with.
+In this step, we'll create a build file that specifies the sources to be built and the script to execute on the image. The script will set up the required applications and configurations.
 
 ```hcl
 build {
-  sources = ["sources.googlecompute.create-new-custom-image"]
+  sources = ["source.googlecompute.create-new-custom-image"]
+
   provisioner "shell" {
-    script = "./scripts/startup.sh"
+    script = "./scripts/startup.sh" # Path to your provisioning script.
   }
 }
 ```
 
-## Step 3. Running the `packer` commands
+## Step 3: Running the Packer Commands
 
-There are few command which we can execute
+You can execute various Packer commands to manage the image creation process. Here are some essential commands:
 
-- `packer init .`
-- `packer validate .`
-- `packet fmt -recursive`
-- `packer build`
-
-```shell
-$ packer
-Usage: packer [--version] [--help] <command> [<args>]
-
-Available commands are:
-    build           build image(s) from template
-    console         creates a console for testing variable interpolation
-    fix             fixes templates from old versions of packer
-    fmt             Rewrites HCL2 config files to canonical format
-    hcl2_upgrade    transform a JSON template into an HCL2 configuration
-    init            Install missing plugins or upgrade plugins
-    inspect         see components of a template
-    validate        check that a template is valid
-    version         Prints the Packer version
-```
+- `packer init .`: Use this command to download Packer plugin binaries. It's the first step when working with a new or existing template.
+- `packer validate .`: Validate the syntax and configuration of your Packer template. This command ensures that your template is valid.
+- `packer build .`: Execute this command to start the image creation process based on your Packer template. Packer will automate provisioning, configuration, and image capture.
 
 ## Output
 
-This is a sample output for the build.
-
-### `init`
-
-The `packer init` command is used to download Packer plugin binaries. This is the first command that should be executed when working with a new or existing template. This command is always safe to run multiple times. Though subsequent runs may give errors, this command will never delete anything.
-
-```shell
-┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
-└─▪ packer init .
-Installed plugin github.com/hashicorp/googlecompute v1.1.1 in "/Users/ahmedzbyr/.config/packer/plugins/github.com/hashicorp/googlecompute/packer-plugin-googlecompute_v1.1.1_x5.0_darwin_amd64"
-```
-
-### `validate`
-
-The `packer validate` Packer command is used to validate the syntax and configuration of a template. The command will return a zero exit status on success, and a non-zero exit status on failure.
-
-```shell
-┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
-└─▪ packer validate .
-The configuration is valid.
-```
-
-### `build`
-
-The `packer build` command takes a template and runs all the builds within it in order to generate a set of artifacts. The various builds specified within a template are executed in parallel, unless otherwise specified. And the artifacts that are created will be outputted at the end of the build.
+When you run the `packer build` command, you'll see an output similar to the following:
 
 ```shell
 ┌─[ahmedzbyr][Ahmeds-MacBook-Pro][±][master ?:1 ✗][~/work/git_repos/taealam/terraform_examples/packer_gce]
@@ -250,3 +208,7 @@ Build 'googlecompute.create-new-custom-image' finished after 2 minutes 24 second
 ==> Builds finished. The artifacts of successful builds are:
 --> googlecompute.create-new-custom-image: A disk image was created: my-custom-image-v29092023
 ```
+
+This output represents the successful creation of your custom GCE image. You can now use this image to deploy new VM instances with your desired configurations and applications.
+
+By automating GCE image creation with Packer and Terraform, you can achieve greater consistency and efficiency in managing your cloud infrastructure. This approach is particularly valuable when you need to maintain multiple VM instances with consistent setups.
