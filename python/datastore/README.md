@@ -116,18 +116,13 @@ db = firestore.Client()
 collection_name = 'TestData'
 
 # Generate 1 GB of test data
-data_size_gb = 1  # Adjust as needed
+data_size_gb = 0.001  # Adjust as needed
 data_size_bytes = data_size_gb * 1024 * 1024 * 1024  # 1 GB in bytes
 
 # Create a random string generator
 def generate_random_string(size):
     return ''.join(random.choice(string.ascii_letters) for _ in range(size))
 
-# Define the batch size for writing documents to Firestore
-batch_size = 500  # Adjust as needed
-
-# Write data to Firestore
-batch = []
 total_bytes_written = 0
 
 while total_bytes_written < data_size_bytes:
@@ -136,23 +131,14 @@ while total_bytes_written < data_size_bytes:
     data = {
         'data': random_data,
     }
-
-    batch.append(data)
     total_bytes_written += len(random_data.encode('utf-8'))
-
-    if len(batch) >= batch_size:
-        db.collection(collection_name).add(batch)
-        batch = []
-
-# Write any remaining documents
-if batch:
-    db.collection(collection_name).add(batch)
+    print("Written: " + str(total_bytes_written) + " Bytes in total.")
+    
+    update_time, batch_ref = db.collection(collection_name).add(data)
+    print(f"Added document with ID: {batch_ref.id}")
 
 print(f"Total data written: {total_bytes_written / (1024 * 1024 * 1024):.2f} GB")
 
-# Cleanup: Delete all documents in the collection
-for doc in db.collection(collection_name).stream():
-    doc.reference.delete()
 ```
 
 This code will generate random data and write it to Firestore in batches until it reaches the specified data size. Please note that writing 1 GB of data to Firestore can take a significant amount of time and may incur costs, so use it for testing and development purposes only. Also, consider cleaning up the data when you're done, as demonstrated in the cleanup section at the end of the code.
