@@ -52,10 +52,6 @@ if batch:
     client.put_multi(batch)
 
 print(f"Total data written: {total_bytes_written / (1024 * 1024 * 1024):.2f} GB")
-
-# Cleanup
-for entity in batch:
-    client.delete(entity.key)
 ```
 
 Make sure to replace `'TestData'` with your actual Datastore entity kind, and adjust the batch size and data size according to your needs.
@@ -92,7 +88,7 @@ print(f"All entities of kind '{kind_to_delete}' have been deleted.")
 
 Make sure to replace `'YourKindName'` with the actual kind name that you want to delete. The code fetches all entities of that kind in batches and deletes them. You can adjust the `batch_size` to control how many entities are deleted at once to avoid exceeding any rate limits.
 
-Please exercise caution when running this code in a production environment, as it permanently deletes all entities of the specified kind. Ensure that you have appropriate backups or safeguards in place before running such code in a production Datastore.
+**Please exercise caution when running this code in a production environment, as it permanently deletes all entities of the specified kind**. Ensure that you have appropriate backups or safeguards in place before running such code in a production Datastore.
 
 ## Create data for Firestore Native
 
@@ -166,4 +162,4 @@ for doc in docs:
 print(f"All documents in collection '{collection_name}' have been deleted.")
 ```
 
-Make sure to replace `'YourCollectionName'` with the actual collection name you want to delete. This code retrieves all documents within the specified collection and deletes them one by one. Be careful when running this code in a production environment, as it permanently deletes all documents in the collection. Ensure you have appropriate backups or safeguards in place before executing this code in a production Firestore database.
+Make sure to replace `'YourCollectionName'` with the actual collection name you want to delete. This code retrieves all documents within the specified collection and deletes them one by one. **Be careful when running this code in a production environment, as it permanently deletes all documents in the collection**. Ensure you have appropriate backups or safeguards in place before executing this code in a production Firestore database.
