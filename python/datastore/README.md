@@ -59,3 +59,35 @@ for entity in batch:
 Make sure to replace `'TestData'` with your actual Datastore entity kind, and adjust the batch size and data size according to your needs.
 
 This code will generate random data and write it to Datastore in batches until it reaches the specified data size. It also performs a cleanup at the end to delete the test data entities. Please note that writing 1 GB of data to Datastore can take a significant amount of time and may incur costs, so use it for testing and development purposes only.
+
+## Delete Data in a `kind`
+
+To delete all contents of a kind in Google Cloud Datastore using Python, you can use the `google-cloud-datastore` library. Here's a sample Python code to delete all entities of a specific kind:
+
+```python
+from google.cloud import datastore
+
+# Initialize the Datastore client
+client = datastore.Client()
+
+# Define the kind you want to delete
+kind_to_delete = 'YourKindName'  # Replace with your kind name
+
+# Query for all entities of the specified kind
+query = client.query(kind=kind_to_delete)
+entities = list(query.fetch())
+
+# Delete all entities in batches
+batch_size = 500  # Adjust the batch size as needed
+
+while entities:
+    batch = entities[:batch_size]
+    client.delete_multi([entity.key for entity in batch])
+    entities = entities[batch_size:]
+
+print(f"All entities of kind '{kind_to_delete}' have been deleted.")
+```
+
+Make sure to replace `'YourKindName'` with the actual kind name that you want to delete. The code fetches all entities of that kind in batches and deletes them. You can adjust the `batch_size` to control how many entities are deleted at once to avoid exceeding any rate limits.
+
+Please exercise caution when running this code in a production environment, as it permanently deletes all entities of the specified kind. Ensure that you have appropriate backups or safeguards in place before running such code in a production Datastore.
