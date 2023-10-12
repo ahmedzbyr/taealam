@@ -60,7 +60,7 @@ Make sure to replace `'TestData'` with your actual Datastore entity kind, and ad
 
 This code will generate random data and write it to Datastore in batches until it reaches the specified data size. It also performs a cleanup at the end to delete the test data entities. Please note that writing 1 GB of data to Datastore can take a significant amount of time and may incur costs, so use it for testing and development purposes only.
 
-## Delete Data in a `kind`
+## Delete Data in a `kind`
 
 To delete all contents of a kind in Google Cloud Datastore using Python, you can use the `google-cloud-datastore` library. Here's a sample Python code to delete all entities of a specific kind:
 
