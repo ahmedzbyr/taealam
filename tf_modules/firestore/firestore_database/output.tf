@@ -9,8 +9,8 @@ output "this_key_prefix" {
   description = <<EOF
   The keyPrefix for this database. 
   
-  - This keyPrefix is used, in combination with the project id ("~") to construct the application id that is returned from the Cloud Datastore APIs in Google App Engine first generation runtimes. 
-  - This value may be empty in which case the appid to use for URL-encoded keys is the project_id (eg: foo instead of v~foo).
+  - This keyPrefix is used, in combination with the project id (\~) to construct the application id that is returned from the Cloud Datastore APIs in Google App Engine first generation runtimes. 
+  - This value may be empty in which case the appid to use for URL-encoded keys is the project_id (eg: foo instead of v\~foo).
 
   EOF
   value       = google_firestore_database.main.key_prefix
