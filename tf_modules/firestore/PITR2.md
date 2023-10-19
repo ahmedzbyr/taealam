@@ -1,17 +1,16 @@
-# Firestore Native Mode: Point in Time Recovery (PITR)
+#  Firestore Native Mode: Point in Time Recovery (PITR)
 
 Data is invaluable, and as any developer would testify, ensuring its security and availability in the event of unintended deletion or modification is paramount. Firestore, Google's NoSQL database service, has introduced PITR (Point in Time Recovery) in its native mode to address this very concern. In this blog, we will explore what PITR is and walk you through the process of recovering from data deletion.
 
-### What is PITR in Firestore Native Mode?
+## What is PITR in Firestore Native Mode?
 
 Point in Time Recovery, abbreviated as PITR, is a feature that allows developers to recover data from a specific point in time. This is particularly useful in situations where data may be unintentionally deleted or modified. Firestore creates periodic backups of your data, which can be restored to regain lost information, ensuring continuity and peace of mind.
 
-### Recovering from Data Deletion: A Step-by-Step Guide
+## Recovering from Data Deletion: A Step-by-Step Guide
 
 To make this practical, let's walk through an example:
 
-#### 1. **Creating a Firestore Native Mode Database Using Terraform**
-
+### 1. **Creating a Firestore Native Mode Database Using Terraform**
 
 ```hcl
 resource "google_firestore_database" "default" {
@@ -38,7 +37,7 @@ terraform init
 terraform apply
 ```
 
-#### 2. **Creating Sample Data using Python API**
+### 2. **Creating Sample Data using Python API**
 
 Before we create data, ensure you have the required Python packages:
 
@@ -74,7 +73,7 @@ With this code, you're adding 100 records to Firestore. Each record has a `large
 | :warning: NOTE: Keep a note of the time when the data was inserted, we will use this to export the data once it is deleted in the next step. |
 | :------------------------------------------------------------------------------------------------------------------------------------------- |
 
-#### 3. **Deleting Data from the Collection using Python API**
+### 3. **Deleting Data from the Collection using Python API**
 
 Python script to delete data:
 
@@ -97,7 +96,7 @@ for i in range(100):
 
 #### 4. **Creating an Export of Data using SnapshotTime into a GCS Bucket**
 
-To create an export, you'll need permissions to both Firestore and the GCS bucket. This should get the data from the `snapshotTime` provided. 
+To create an export, you'll need permissions to both Firestore and the GCS bucket. This should get the data from the `snapshotTime` provided.
 
 Python script to export data:
 
@@ -126,8 +125,7 @@ operation = db.export_documents_to_gcs(
 | :books: NOTE: Update the `datetime.now(timezone.utc)` to the time when the data was inserted approx to nearest minute. |
 | :--------------------------------------------------------------------------------------------------------------------- |
 
-
-#### 5. **Restoring Data from the GCS Bucket**
+### 5. **Restoring Data from the GCS Bucket**
 
 To use the `gcloud` command-line tool for importing data from Google Cloud Storage (GCS) to Firestore, you can utilize the `firestore import` command.
 
