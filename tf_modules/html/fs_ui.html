@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestore Backup Schedule Configuration</title>
+    <style>
+        body {
+            font-family: 'San Francisco', sans-serif;
+            background-color: #f0f0f0;
+            margin: 40px;
+        }
+
+        #config-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007aff;
+            color: #ffffff;
+            float: right;
+        }
+
+        #retention-help {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        #error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        #day-of-week-section {
+            display: none;  /* By default, the Day of the Week section is hidden */
+        }
+
+        .info-icon {
+            cursor: pointer;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .tooltip {
+            display: none;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            max-width: 300px;
+        }
+
+        .info-icon:hover .tooltip {
+            display: block;
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+    <div id="config-form">
+        <h2>Firestore Backup Schedule Configuration</h2>
+        <form id="firestore-form" onsubmit="validateForm(event)">
+            <!-- Project -->
+            <label for="project">Project ID</label>
+            <input type="text" id="project" required>
+
+            <!-- Retention -->
+            <label for="retention">Retention<span class="info-icon" onclick="toggleTooltip()">
+                    ℹ️
+                    <span class="tooltip" id="retention-help">
+                        <!-- The tooltip content -->
+                        ERROR. Please check the retention. We accept only `d` (day) or `w` (week).
+                        - If the frequency is selected as `DAILY` then use `d` with a min value of `3d` (3 days) and max value of
+                        `7d`
+                        (7 days).
+                        - If the frequency is selected as `WEEKLY` then use `w` with a min value of `3w` (3 weeks) and max value of
+                        `14w` (14 weeks).
+                    </span>
+                </span>
+            </label>
+            <input type="text" id="retention" oninput="updateRetentionHelp()" placeholder="e.g., 3d or 3w" />
+
+
+            <!-- Frequency -->
+            <label for="frequency">Backup Frequency</label>
+            <select id="frequency" onchange="updateFrequencySelection()">
+                <option value="DAILY" selected>DAILY</option>
+                <option value="WEEKLY">WEEKLY</option>
+            </select>
+
+            <!-- Day of the Week -->
+            <div id="day-of-week-section"> <!-- Added a wrapper div for the Day of the Week section -->
+                <label for="day-of-week">Day of the Week</label>
+                <select id="day-of-week">
+                    <option value="SUNDAY">SUNDAY</option>
+                    <option value="MONDAY">MONDAY</option>
+                    <option value="TUESDAY">TUESDAY</option>
+                    <option value="WEDNESDAY">WEDNESDAY</option>
+                    <option value="THURSDAY">THURSDAY</option>
+                    <option value="FRIDAY">FRIDAY</option>
+                    <option value="SATURDAY">SATURDAY</option>
+                </select>
+            </div>
+
+            <!-- Database ID -->
+            <label for="database">Firestore Database ID</label>
+            <input type="text" id="database" value="(default)" required>
+
+            <div id="error-message"></div>
+            <button type="submit">Save Configuration</button>
+        </form>
+    </div>
+
+    <script>
+        function updateRetentionHelp() {
+            const frequency = document.getElementById("frequency").value;
+            const retentionHelp = document.getElementById("retention-help");
+            if (frequency === "DAILY") {
+                retentionHelp.textContent = "Backup retention in days (e.g., 3d) or weeks (e.g., 3w) based on the frequency set.";
+            } else {
+                retentionHelp.textContent = "Backup retention in weeks (e.g., 3w, 4w) for WEEKLY frequency.";
+            }
+        }
+
+        // Function to show/hide the Day of the Week section based on the selected frequency
+        function updateFrequencySelection() {
+            const frequency = document.getElementById("frequency").value;
+            const dayOfWeekSection = document.getElementById("day-of-week-section");
+
+            if (frequency === "WEEKLY") {
+                dayOfWeekSection.style.display = "block";  // Show the section if WEEKLY is selected
+            } else {
+                dayOfWeekSection.style.display = "none";  // Hide otherwise
+            }
+
+            updateRetentionHelp();
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            const frequency = document.getElementById("frequency").value;
+            const retention = document.getElementById("retention").value;
+            const errorMessage = document.getElementById("error-message");
+
+            let isValid = true;
+            let message = "";
+
+            if (frequency === "DAILY" && retention.slice(-1) === "d") {
+                const days = parseInt(retention.slice(0, -1));
+                if (days < 3 || days > 7) {
+                    isValid = false;
+                    message += "For DAILY frequency, retention should be between 3d to 7d. ";
+                }
+            } else if (frequency === "WEEKLY" && retention.slice(-1) === "w") {
+                const weeks = parseInt(retention.slice(0, -1));
+                if (weeks < 3 || weeks > 14) {
+                    isValid = false;
+                    message += "For WEEKLY frequency, retention should be between 3w to 14w. ";
+                }
+            } else {
+                isValid = false;
+                message += "Invalid retention format. ";
+            }
+
+            if (isValid) {
+                errorMessage.textContent = "Information is Correct";
+                // Process the form, for instance, sending the data to the server.
+            } else {
+                errorMessage.textContent = message;
+            }
+        }
+    
+        // Call the function initially to set the proper display state on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateFrequencySelection();
+        });
+
+        function toggleTooltip() {
+            const tooltip = document.getElementById("retention-help");
+            tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+        }
+
+
+    </script>
+
+</body>
+
+</html>

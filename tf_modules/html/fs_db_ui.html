@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestore Setup</title>
+    <style>
+        /* macOS-style CSS */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background-color: #ececec;
+            margin: 0;
+            padding: 50px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            background-color: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Firestore Setup</h1>
+        <form>
+            <!-- Project -->
+            <label for="project">Project ID:</label>
+            <input type="text" id="project" name="project" placeholder="Enter the project ID" required>
+
+            <!-- Name -->
+            <label for="name">Database ID:</label>
+            <input type="text" id="name" name="name" placeholder="4-63 characters, /[a-z][0-9]-/ format" required>
+
+            <!-- Location ID -->
+            <label for="location_id">Location:</label>
+            <select id="location_id" name="location_id">
+                <option value="nam5">nam5</option>
+                <option value="eur3">eur3</option>
+            </select>
+
+            <!-- Type -->
+            <label for="type">Database Type:</label>
+            <select id="type" name="type">
+                <option value="FIRESTORE_NATIVE">FIRESTORE_NATIVE</option>
+                <option value="DATASTORE_MODE">DATASTORE_MODE</option>
+            </select>
+
+            <!-- Concurrency Mode -->
+            <label for="concurrency_mode">Concurrency Control Mode:</label>
+            <select id="concurrency_mode" name="concurrency_mode">
+                <option value="OPTIMISTIC">OPTIMISTIC</option>
+                <option value="PESSIMISTIC">PESSIMISTIC</option>
+                <option value="OPTIMISTIC_WITH_ENTITY_GROUPS">OPTIMISTIC_WITH_ENTITY_GROUPS</option>
+            </select>
+
+            <!-- App Engine Integration Mode -->
+            <label for="app_engine_integration_mode">App Engine Integration Mode:</label>
+            <select id="app_engine_integration_mode" name="app_engine_integration_mode">
+                <option value="ENABLED">ENABLED</option>
+                <option value="DISABLED">DISABLED</option>
+            </select>
+
+            <!-- Point in Time Recovery Enablement -->
+            <label for="point_in_time_recovery_enablement">Point in Time Recovery:</label>
+            <select id="point_in_time_recovery_enablement" name="point_in_time_recovery_enablement">
+                <option value="POINT_IN_TIME_RECOVERY_ENABLED">POINT_IN_TIME_RECOVERY_ENABLED</option>
+                <option value="POINT_IN_TIME_RECOVERY_DISABLED" selected>POINT_IN_TIME_RECOVERY_DISABLED</option>
+            </select>
+
+            <!-- Delete Protection State -->
+            <label for="delete_protection_state">Delete Protection State:</label>
+            <select id="delete_protection_state" name="delete_protection_state">
+                <option value="DELETE_PROTECTION_ENABLED">DELETE_PROTECTION_ENABLED</option>
+                <option value="DELETE_PROTECTION_STATE_UNSPECIFIED">DELETE_PROTECTION_STATE_UNSPECIFIED</option>
+                <option value="DELETE_PROTECTION_DISABLED">DELETE_PROTECTION_DISABLED</option>
+            </select>
+
+            <!-- Submit button -->
+            <button type="submit">Setup Firestore</button>
+        </form>
+    </div>
+</body>
+
+</html>
