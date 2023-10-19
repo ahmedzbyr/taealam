@@ -25,11 +25,11 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_frequency"></a> [frequency](#input\_frequency) | For a schedule that runs daily at a specified time. | `string` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | The ID of the project in which the resource belongs. | `string` | n/a | yes |
-| <a name="input_retention"></a> [retention](#input\_retention) | At what relative time in the future, compared to its creation time, the backup should be deleted, <br>  e.g. keep backups for 7 days. A duration in seconds with up to nine fractional digits, ending with 's'. <br><br>  Example: "3.5s". For a daily backup recurrence, set this to a value up to 7 days. <br>  If you set a weekly backup recurrence, set this to a value up to 14 weeks. | `string` | n/a | yes |
 | <a name="input_database"></a> [database](#input\_database) | The Firestore database id. Defaults to `(default)`. | `string` | `"(default)"` | no |
-| <a name="input_day_of_the_week"></a> [day\_of\_the\_week](#input\_day\_of\_the\_week) | The day of week to run (only used if frequency == WEEKLY). Possible values are: DAY\_OF\_WEEK\_UNSPECIFIED, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY. | `string` | `"SUNDAY"` | no |
+| <a name="input_day_of_the_week"></a> [day\_of\_the\_week](#input\_day\_of\_the\_week) | The day of week to run (only used if frequency == WEEKLY). <br><br>  Possible values are: `DAY_OF_WEEK_UNSPECIFIED`, `MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`, `SATURDAY`, `SUNDAY`. | `string` | `"SUNDAY"` | no |
+| <a name="input_frequency"></a> [frequency](#input\_frequency) | For a schedule that runs daily at a specified time. We only accept `DAILY`, `WEEKLY`. | `string` | `"DAILY"` | no |
+| <a name="input_retention"></a> [retention](#input\_retention) | Backup  rentention in days `3d` or weeks `3w` based on the frequency set.<br><br>  We accept only `d` (day) or `w` (week).<br><br>  - If the frequency is selected as `DAILY` then use `d` with a min value of `3d` (3 days) and max value of `7d` (7 days) <br>  - If the frequency is selected as `WEEKLY` then use `w` with a min value of `3w` (3 weeks) and max value of `14w` (14 weeks) | `string` | `"3d"` | no |
 
 ## Outputs
 
@@ -43,6 +43,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | >= 5.2.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Requirements
 
@@ -59,6 +60,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [google_firestore_backup_schedule.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/firestore_backup_schedule) | resource |
+| [null_resource.check_rentention_is_valid](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 
 ##  Managing Roles and Permissions
