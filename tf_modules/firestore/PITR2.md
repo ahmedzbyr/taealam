@@ -6,7 +6,46 @@ Data is invaluable, and as any developer would testify, ensuring its security an
 
 Point in Time Recovery, abbreviated as PITR, is a feature that allows developers to recover data from a specific point in time. This is particularly useful in situations where data may be unintentionally deleted or modified. Firestore creates periodic backups of your data, which can be restored to regain lost information, ensuring continuity and peace of mind.
 
-## Recovering from Data Deletion: A Step-by-Step Guide
+# Firestore Point-in-Time Recovery (PITR)
+
+**Introduction**
+
+Firestore's Point-in-Time Recovery (PITR) feature offers a safety net for your data, protecting it against accidental deletions or erroneous writes. With PITR, you can maintain consistent versions of your documents from past timestamps, allowing you to recover your data to a specific point in time, seamlessly. In this article, we'll explore the benefits of PITR and how to harness its capabilities effectively.
+
+**A Note on Pre-GA Offerings**
+
+Before diving into the specifics of PITR, it's important to mention that this feature is subject to the "Pre-GA Offerings Terms" outlined in the General Service Terms of the [Service Specific Terms](https://cloud.google.com/terms/service-terms#1). Pre-GA features are provided "as is" and may have limited support. To understand the different launch stages, you can refer to the [product launch stages](https://cloud.google.com/products#product-launch-stages) page.
+
+**The Power of Point-in-Time Recovery**
+
+PITR is your guardian against data disasters. It helps you safeguard your data from accidental mishaps such as data deletions or incorrect writes. The key advantage of PITR is that it allows you to recover your data to any point in time within the last 7 days. This means that even if a developer inadvertently pushes incorrect data or deletes essential information, you can turn back the clock and restore your data to a previous state.
+
+It's essential to highlight that for any live database that adheres to Firestore's [Best Practices](https://cloud.google.com/firestore/docs/best-practices), using PITR doesn't impact the performance of read or write operations. It operates seamlessly in the background, ensuring data integrity without causing any slowdowns.
+
+**Understanding the PITR Window**
+
+After enabling PITR, Firestore starts retaining your data within what's known as the "PITR window." This window extends over a 7-day period. The PITR window timeline depends on the enablement status, as follows:
+
+- When PITR is disabled, you can read data starting from one hour before the time of your read request.
+- If PITR is enabled within the last 7 days, you can read data from one hour before the moment PITR was enabled.
+- In case PITR was enabled more than 7 days ago, you can read data dating back to 7 days before the time of your read request.
+
+Please note that you can't immediately start reading data from 7 days in the past right after enabling PITR. There's an initial one-hour buffer.
+
+In the PITR window, Firestore retains a single version per minute. This means you can read documents at minute granularity using timestamps. In situations where multiple writes occurred for a document, only one version is retained. For example, if a document had multiple writes (v1, v2, ... vk) between timestamps like `2023-05-30 09:00:00 AM` (exclusive) and `2023-05-30 09:01:00 AM` (inclusive), a read request at `2023-05-30 09:01:00 AM` will return the `vk` version of the document.
+
+It's important to note that the 7-day retention period mainly applies to stale read operations. For consistent import or export operations, Firestore supports data up to one hour ago.
+
+**Recovering Data with PITR**
+
+Firestore offers two ways to recover data using PITR:
+
+1. **Recover a Portion of the Database**: This method involves performing a "stale read," where you specify a query condition or use a direct key lookup along with a timestamp from the past. You can then write the results back into the live database. This approach is typically used for precise, surgical operations on your live database. For instance, if you accidentally delete a specific document or make an incorrect update to a subset of data, this method allows you to recover it. For detailed instructions, refer to the [guide on recovering a portion of your database](https://cloud.google.com/firestore/docs/use-pitr#read-pitr).
+
+2. **Recover the Entire Database**: To recover the entire database, you can export it by specifying a timestamp from the past and then import it into a new database. However, it's worth noting that exporting a database can be a time-consuming process, potentially taking several hours. It's essential to be aware that you can only export consistent PITR data where the timestamp is a whole minute timestamp within the past hour but not earlier than the earliestVersionTime. For details on this process, please refer to the guide on [exporting and importing from a consistent PITR version](https://cloud.google.com/firestore/docs/use-pitr#export_and_import_from_a_consistent_pitr_version).
+
+
+## Recovering from Data Deletion: A Step-by-Step Guide (Entire Database)
 
 To make this practical, let's walk through an example:
 
