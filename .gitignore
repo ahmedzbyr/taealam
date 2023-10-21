@@ -6,3 +6,4 @@ terraform.tfstate.backup
 experiments/
 blog_post/
 blog_posts_draft/
+.vscode
