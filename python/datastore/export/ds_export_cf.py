@@ -80,8 +80,8 @@ def datastore_export_entities(event, context):
 
     # Wait for the operation to complete and retrieve the result.
     # This will block until the operation is complete.
-    response = operation.result()
+    # response = operation.result()
 
     # Handle the response.
     # In this case, print the JSON representation of the response to the console.
-    print(json.dumps(response, indent=2))
+    print(operation)
