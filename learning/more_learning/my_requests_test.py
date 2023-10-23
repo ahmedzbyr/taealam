@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 import my_requests
 
+
 # This method will be used by the mock to replace requests.get
 
 
