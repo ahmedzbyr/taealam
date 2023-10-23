@@ -6,15 +6,11 @@ Data is invaluable, and as any developer would testify, ensuring its security an
 
 Point in Time Recovery, abbreviated as PITR, is a feature that allows developers to recover data from a specific point in time. This is particularly useful in situations where data may be unintentionally deleted or modified. Firestore creates periodic backups of your data, which can be restored to regain lost information, ensuring continuity and peace of mind.
 
-# Firestore Point-in-Time Recovery (PITR)
+## Firestore Point-in-Time Recovery (PITR)
 
 **Introduction**
 
 Firestore's Point-in-Time Recovery (PITR) feature offers a safety net for your data, protecting it against accidental deletions or erroneous writes. With PITR, you can maintain consistent versions of your documents from past timestamps, allowing you to recover your data to a specific point in time, seamlessly. In this article, we'll explore the benefits of PITR and how to harness its capabilities effectively.
-
-**A Note on Pre-GA Offerings**
-
-Before diving into the specifics of PITR, it's important to mention that this feature is subject to the "Pre-GA Offerings Terms" outlined in the General Service Terms of the [Service Specific Terms](https://cloud.google.com/terms/service-terms#1). Pre-GA features are provided "as is" and may have limited support. To understand the different launch stages, you can refer to the [product launch stages](https://cloud.google.com/products#product-launch-stages) page.
 
 **The Power of Point-in-Time Recovery**
 

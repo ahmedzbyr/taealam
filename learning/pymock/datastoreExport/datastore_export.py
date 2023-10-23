@@ -5,6 +5,8 @@ import os
 
 # Import Google Cloud Datastore Admin Client
 from google.cloud import datastore_admin_v1
+# Create a client instance to connect to Google Cloud Datastore admin service.
+client = datastore_admin_v1.DatastoreAdminClient()
 
 #
 # More information about the example in below URL, using the example here to modify further for Cloud function.
@@ -23,17 +25,15 @@ from google.cloud import datastore_admin_v1
 #
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
-json_data = {
-    "project_id": "elevated-column-400011",
-    "export_bucket": "gs://ds-export-bucket/",
-    "kinds": ["abc", "xyz", "axz"],
-    "namespace_ids": ["my_nm"]
-}
+# json_data = {
+#     "project_id": "elevated-column-400011",
+#     "export_bucket": "gs://ds-export-bucket/",
+#     "kinds": ["abc", "xyz", "axz"],
+#     "namespace_ids": ["my_nm"]
+# }
 
 
-def datastore_export_entities(event, context):
-    # Create a client instance to connect to Google Cloud Datastore admin service.
-    client = datastore_admin_v1.DatastoreAdminClient()
+def datastore_export(event, context):
 
     # Check if the event contains 'data' field which is expected when triggered via Cloud Scheduler.
     # If so, decode the inner data field of the JSON payload.
@@ -41,7 +41,7 @@ def datastore_export_entities(event, context):
         json_data = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
     else:
         # If not, (e.g., if triggered via Cloud Console on a Cloud Function), the event itself is the data.
-        json_data = event
+        json_data = json.loads(event)
 
     #
     # Set up the entity filter based on the documentation provided in the URL.
@@ -84,4 +84,4 @@ def datastore_export_entities(event, context):
 
     # Handle the response.
     # In this case, print the JSON representation of the response to the console.
-    print(json.dumps(response, indent=2))
+    print(response)
