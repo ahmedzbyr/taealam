@@ -1,33 +1,28 @@
-#  Data Export from Firestore / Datastore
+---
+toc: true
+toc_label: "Contents"
+toc_icon: "cog"
+title: Data Export from Datastore & Firestore
+category: ["GCP"]
+tags: ["export", "recovery", "python"]
+header:
+  {
+    overlay_image: /assets/images/unsplash-image-67.jpg,
+    og_image: /assets/images/unsplash-image-67.jpg,
+    caption: "Photo credit: [**Unsplash**](https://unsplash.com)",
+  }
+---
 
-- [ Data Export from Firestore / Datastore](#data-export-from-firestore--datastore)
-  - [Datastore Exports in GCP using Python](#datastore-exports-in-gcp-using-python)
-    - [Importing Necessary Libraries](#importing-necessary-libraries)
-    - [Initializing Datastore Client](#initializing-datastore-client)
-    - [Understanding Export/Import Service](#understanding-exportimport-service)
-    - [Defining Expected JSON Payload](#defining-expected-json-payload)
-    - [The Main Export Function](#the-main-export-function)
-    - [Setting Up Entity Filter](#setting-up-entity-filter)
-      - [EntityFilter](#entityfilter)
-    - [Preparing the Export Request](#preparing-the-export-request)
-    - [Initiating the Export Request](#initiating-the-export-request)
-    - [Monitoring the Operation](#monitoring-the-operation)
-  - [Firestore Data Export with Python](#firestore-data-export-with-python)
-    - [Importing Necessary Libraries](#importing-necessary-libraries-1)
-    - [Defining Expected JSON Payload](#defining-expected-json-payload-1)
-    - [Setting Up Firestore Client](#setting-up-firestore-client)
-    - [Defining The Round Time Function](#defining-the-round-time-function)
-    - [Defining The Main Export Function](#defining-the-main-export-function)
-    - [Parsing The Event Data](#parsing-the-event-data)
-    - [Creating The Export Request](#creating-the-export-request)
-    - [Initiating The Export Request](#initiating-the-export-request-1)
-  - [ Testing Export Python Code](#testing-export-python-code)
+# Data Export from Datastore & Firestore
 
-## Datastore Exports in GCP using Python
+In this blog post, we will venture into exporting data from Firestore and Datastore modes. Find the code on [Github](https://github.com/ahmedzbyr/taealam/tree/master/python/datastore/export). 
 
-Google Cloud Platform (GCP) offers robust solutions for managing databases. One such service is Google Cloud Datastore, a highly scalable NoSQL database that supports automatic sharding and load balancing. However, you may need to export your data from Datastore to Google Cloud Storage (GCS) for further analysis or backup. In this blog post, we will go over a Python script that automates this process using GCP’s Datastore Admin Client. This script can be triggered via Google Cloud Scheduler or directly from a Cloud Function. Let's dig into the code to understand its mechanism.
 
-Code Location : [Github](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/ds_export_cf.py)
+## `Datastore` Data Exports in GCP with Python
+
+The Google Cloud Platform (GCP) is known for its robust database management solutions. Among its offerings is the Google Cloud Datastore, a highly scalable NoSQL database designed to seamlessly handle automatic sharding and load balancing. There could be instances where exporting your data from Datastore to Google Cloud Storage (GCS) becomes essential, either for deeper analysis or for **backup purposes**. In this piece, we'll walk you through a Python script crafted to automate this data transfer process leveraging GCP's **Datastore Admin Client**. There are other ways to export the data as well using the `googleapiclient`, but this time we will be looking into the **Datastore Admin Client**. This script is designed to be triggered either through Google *Cloud Scheduler* or directly from a *Cloud Function*, offering flexibility in how you initiate the data export. Join us as we delve into the code and unravel its workings.
+
+Code Location : [ds_export_cf.py](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/ds_export_cf.py)
 
 ### Importing Necessary Libraries
 
@@ -48,9 +43,20 @@ client = datastore_admin_v1.DatastoreAdminClient()
 
 Here, an instance of `DatastoreAdminClient` is created to interact with the Datastore admin service.
 
+### Defining The Round Time Function
+
+This function is utilized to round the time to the nearest minute. It will be applied to the bucket path ensuring that the exported data is directed to a specified directory.
+
+```python
+def round_time(dt=None, date_delta=datetime.timedelta(minutes=1), to='down'):
+    #...
+```
+
+`round_time` function rounds a given datetime object to a multiple of a specified timedelta, which is useful when defining a snapshot time for the export.
+
 ### Understanding Export/Import Service
 
-The script comments detail how the Export/Import service facilitates copying a subset or all entities to/from GCS. This data can then be imported into Datastore in any GCP project or loaded into Google BigQuery for analysis. These operations are performed asynchronously, with the ability to track their progress and errors through an Operation resource.
+The script Export/Import service facilitates copying a subset or all entities to/from GCS. This data can then be imported into Datastore in any GCP project or loaded into Google BigQuery for analysis. These operations are performed asynchronously, with the ability to track their progress and errors through an Operation resource.
 
 ### Defining Expected JSON Payload
 
@@ -75,11 +81,21 @@ def datastore_export(event, context):
     #...
 ```
 
-`datastore_export` is the primary function that handles the export process. It checks for a 'data' field in the event argument to decode the JSON payload accordingly.
+`datastore_export` is the primary function that handles the export process. It checks for a 'data' field in the event argument to decode the JSON payload accordingly. The request could be from cloud function which is `b64encode`d. Else we take the information directly from the Cloud function as it is.
+ 
+```python
+    # Check if the event contains 'data' field which is expected when triggered via Cloud Scheduler.
+    # If so, decode the inner data field of the JSON payload.
+    if "data" in event:
+        json_data = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+    else:
+        # If not, (e.g., if triggered via Cloud Console on a Cloud Function), the event itself is the data.
+        json_data = json.loads(event)
+```
 
 ### Setting Up Entity Filter
 
-#### EntityFilter
+#### Entity Filter
 
 `EntityFilter` is a configuration object that identifies a specific subset of entities in a project. This selection can be made based on combinations of kinds and namespaces. Below are some usage examples to illustrate how `EntityFilter` can be used:
 
@@ -160,11 +176,11 @@ print(response)
 
 The script waits for the operation to complete by calling `operation.result()`. Once completed, it prints the JSON representation of the response to the console.
 
-## Firestore Data Export with Python
+## `Firestore` Data Exports in GCP with Python
 
-In this blog post, we delve into a Python script designed to automate the export of data from Google Cloud Firestore to Google Cloud Storage. This script can be triggered by Google Cloud Scheduler or directly from a Cloud Function. Let's break down the code to understand its workings and how to potentially modify it for your use case.
+We will now delve into a Python script designed to automate the export of data from Google Cloud Firestore to Google Cloud Storage. This script can be triggered by Google Cloud Scheduler or directly from a Cloud Function. Let's break down the code to understand its workings and how to potentially modify it for your use case.
 
-Code Location : [Github](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/fs_export_cf.py)
+Code Location : [fs_export_cf.py](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/fs_export_cf.py)
 
 
 ### Importing Necessary Libraries
@@ -204,7 +220,7 @@ We create an instance of `FirestoreAdminClient` to interact with Firestore.
 
 ### Defining The Round Time Function
 
-We use this function to round the time to a minute so that we can export using the `snapshot_time` in the API.
+This function is employed to round off the time to the nearest minute, enabling us to export data utilizing the `snapshot_time` parameter in the API. As of the time this blog was written, this feature is yet to be supported in the `FirestoreAdminClient`, although it's slated for inclusion in future releases. Additionally, this rounding function will be harnessed in crafting the bucket path, thereby creating backups in distinct timed directories, ensuring an organized data retrieval system.
 
 ```python
 def round_time(dt=None, date_delta=datetime.timedelta(minutes=1), to='down'):
