@@ -2,6 +2,7 @@
 import base64
 import json
 import os
+import datetime
 
 # Import Google Cloud Datastore Admin Client
 from google.cloud import datastore_admin_v1
@@ -31,6 +32,33 @@ json_data = {
     "kinds": ["abc", "xyz", "axz"],
     "namespace_ids": ["my_nm"]
 }
+
+
+def round_time(dt=None, date_delta=datetime.timedelta(minutes=1), to='down'):
+    """
+    Round a datetime object to a multiple of a timedelta
+    dt : datetime.datetime object, default now.
+    dateDelta : timedelta object, we round to a multiple of this, default 1 minute.
+    from:  http://stackoverflow.com/questions/3463930/how-to-round-the-minute-of-a-datetime-object-python
+    """
+    round_to = date_delta.total_seconds()
+    if dt is None:
+        dt = datetime.datetime.now()
+    seconds = (dt - dt.min).seconds
+
+    if seconds % round_to == 0 and dt.microsecond == 0:
+        rounding = (seconds + round_to / 2) // round_to * round_to
+    else:
+        if to == 'up':
+            # // is a floor division, not a comment on following line (like in javascript):
+            rounding = (seconds + dt.microsecond/1000000 +
+                        round_to) // round_to * round_to
+        elif to == 'down':
+            rounding = seconds // round_to * round_to
+        else:
+            rounding = (seconds + round_to / 2) // round_to * round_to
+
+    return (dt + datetime.timedelta(0, rounding - seconds, - dt.microsecond)).isoformat("T")
 
 
 def datastore_export(event, context):
@@ -67,7 +95,7 @@ def datastore_export(event, context):
     #
     request = datastore_admin_v1.ExportEntitiesRequest(
         project_id=json_data["project_id"],
-        output_url_prefix=json_data["export_bucket"],
+        output_url_prefix=json_data["export_bucket"] + str(round_time()) + "Z",
         entity_filter=entity_filter
     )
 

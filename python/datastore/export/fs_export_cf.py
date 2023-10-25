@@ -74,7 +74,7 @@ def firestore_export(event, context):
     request = firestore_admin_v1.ExportDocumentsRequest(
         name="projects/"+json_data["project_id"] +
         "/databases/" + json_data["db_id"],
-        output_uri_prefix=json_data["export_bucket"],
+        output_uri_prefix=json_data["export_bucket"] + str(round_time()) + "Z",
         collection_ids=json_data["collection_ids"] if json_data.get(
             "collection_ids") else []
         # namespace_ids=json_data["namespace_ids"] if json_data.get(

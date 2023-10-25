@@ -36,7 +36,7 @@ def test_datastore_export(mock_get):
     export_args = mockDatastore.export_entities.call_args[1]
 
     # Asserting that the output_url_prefix attribute of the request object is set to the bucket URL
-    assert export_args["request"].output_url_prefix == "gs://my-bucket", "Response should not be None."
+    assert "gs://my-bucket" in export_args["request"].output_url_prefix, "Response should not be None."
 
 
 # Mocking the export_entities method of the DatastoreAdminClient class again for a different test case
@@ -65,7 +65,7 @@ def test_datastore_export_entity_filter(mock_get):
     export_args = mockDatastore.export_entities.call_args[1]
 
     # Asserting that the request object includes the test values
-    assert export_args["request"].output_url_prefix == bucket
+    assert bucket in export_args["request"].output_url_prefix
     assert export_args["request"].entity_filter.kinds == str(kinds)
     assert export_args["request"].entity_filter.namespace_ids == str(
         namespace_ids)
