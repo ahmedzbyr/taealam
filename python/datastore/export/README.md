@@ -14,6 +14,7 @@
     - [Monitoring the Operation](#monitoring-the-operation)
   - [Firestore Data Export with Python](#firestore-data-export-with-python)
     - [Importing Necessary Libraries](#importing-necessary-libraries-1)
+    - [Defining Expected JSON Payload](#defining-expected-json-payload-1)
     - [Setting Up Firestore Client](#setting-up-firestore-client)
     - [Defining The Round Time Function](#defining-the-round-time-function)
     - [Defining The Main Export Function](#defining-the-main-export-function)
@@ -22,12 +23,11 @@
     - [Initiating The Export Request](#initiating-the-export-request-1)
   - [ Testing Export Python Code](#testing-export-python-code)
 
-
 ## Datastore Exports in GCP using Python
 
 Google Cloud Platform (GCP) offers robust solutions for managing databases. One such service is Google Cloud Datastore, a highly scalable NoSQL database that supports automatic sharding and load balancing. However, you may need to export your data from Datastore to Google Cloud Storage (GCS) for further analysis or backup. In this blog post, we will go over a Python script that automates this process using GCP’s Datastore Admin Client. This script can be triggered via Google Cloud Scheduler or directly from a Cloud Function. Let's dig into the code to understand its mechanism.
 
-Code Location : [Github](./ds_export_cf.py)
+Code Location : [Github](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/ds_export_cf.py)
 
 ### Importing Necessary Libraries
 
@@ -58,12 +58,12 @@ The script comments detail how the Export/Import service facilitates copying a s
 #
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
-# json_data = {
-#     "project_id": "elevated-column-400011",
-#     "export_bucket": "gs://ds-export-bucket/",
-#     "kinds": ["abc", "xyz", "axz"],
-#     "namespace_ids": ["my_nm"]
-# }
+json_data = {
+    "project_id": "elevated-column-400011",
+    "export_bucket": "gs://ds-export-bucket/",
+    "kinds": ["abc", "xyz", "axz"],
+    "namespace_ids": ["my_nm"]
+}
 ```
 
 A sample JSON payload is outlined which is expected to be received from Cloud Scheduler or Cloud Function, containing necessary information such as project_id, export_bucket, kinds, and namespace_ids.
@@ -83,27 +83,32 @@ def datastore_export(event, context):
 
 `EntityFilter` is a configuration object that identifies a specific subset of entities in a project. This selection can be made based on combinations of kinds and namespaces. Below are some usage examples to illustrate how `EntityFilter` can be used:
 
-- **Entire Project:** 
+- **Entire Project:**
+
   ```plaintext
   kinds=[], namespace_ids=[]
   ```
 
 - **Specific Kinds in All Namespaces:**
+
   ```plaintext
   kinds=['Foo', 'Bar'], namespace_ids=[]
   ```
 
 - **Specific Kinds in Default Namespace Only:**
+
   ```plaintext
   kinds=['Foo', 'Bar'], namespace_ids=['']
   ```
 
 - **Specific Kinds in Both Default and Specified Namespaces:**
+
   ```plaintext
   kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']
   ```
 
 - **All Kinds in a Specified Namespace:**
+
   ```plaintext
   kinds=[], namespace_ids=['Baz']
   ```
@@ -112,7 +117,6 @@ def datastore_export(event, context):
 | ----------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `kinds[]`         | string | If empty, this represents all kinds.                                                                                                                                                                                                                                                                    |
 | `namespace_ids[]` | string | An empty list represents all namespaces which is the preferred usage for projects that don't use namespaces. An empty string element represents the default namespace, advisable for projects with data in non-default namespaces but wish to exclude them. Each namespace in this list must be unique. |
-
 
 ```python
 entity_filter = datastore_admin_v1.EntityFilter()
@@ -133,15 +137,12 @@ An `ExportEntitiesRequest` object is created, populating the required fields wit
 
 ### Initiating the Export Request
 
-Certainly! Below is the information structured in a Markdown table:
-
 | Fields            | Type                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | project_id        | string              | Required. Project ID against which to make the request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | labels            | map<string, string> | Client-assigned labels.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | entity_filter     | EntityFilter        | Description of what data from the project is included in the export.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | output_url_prefix | string              | Required. Location for the export metadata and data files. The full resource URL of the external storage location. Currently, only Google Cloud Storage is supported. So `output_url_prefix` should be of the form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME` is the name of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional Cloud Storage namespace path (this is not a Cloud Datastore namespace). For more information about Cloud Storage namespace paths, see [Object name considerations](https://cloud.google.com/storage/docs/naming). The resulting files will be nested deeper than the specified URL prefix. The final output URL will be provided in the `google.datastore.admin.v1.ExportEntitiesResponse.output_url` field. That value should be used for subsequent `ImportEntities` operations. By nesting the data files deeper, the same Cloud Storage bucket can be used in multiple `ExportEntities` operations without conflict. |
-
 
 ```python
 operation = client.export_entities(request=request)
@@ -163,7 +164,8 @@ The script waits for the operation to complete by calling `operation.result()`. 
 
 In this blog post, we delve into a Python script designed to automate the export of data from Google Cloud Firestore to Google Cloud Storage. This script can be triggered by Google Cloud Scheduler or directly from a Cloud Function. Let's break down the code to understand its workings and how to potentially modify it for your use case.
 
-Code Location : [Github](./fs_export_cf.py)
+Code Location : [Github](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/fs_export_cf.py)
+
 
 ### Importing Necessary Libraries
 
@@ -176,6 +178,21 @@ from google.cloud import firestore_admin_v1
 ```
 
 Here, we import the necessary libraries including `firestore_admin_v1` from `google.cloud`, which provides the interface to interact with Firestore Admin services.
+
+### Defining Expected JSON Payload
+
+```python
+#
+# Define a JSON payload expected from Cloud Scheduler or Cloud Function
+#
+json_data = {
+    "project_id": "elevated-column-400011",
+    "db_id": "db_id",
+    "export_bucket": "gs://fs-export-bucket/",
+    "collection_ids": ["abc", "xyz", "axz"],
+    "namespace_ids": ["my_nm"]
+}
+```
 
 ### Setting Up Firestore Client
 
@@ -246,15 +263,21 @@ operation = client.export_documents(request=request)
 ##  Testing Export Python Code
 
 ```shell
-┌─(.venv)[ahmedzbyr][Zubairs-MacBook-Pro][±][feature/updates U:4 ?:2 ✗][~/projects/taealam/python/datastore]
+┌─(.venv)[ahmedzbyr][Zubairs-MacBook-Pro][±][master U:2 ✗][~/projects/taealam/python/datastore]
 └─▪ nose2 export
+{ "export_bucket": "gs://my-bucket/" , "db_id": "db_id", "project_id" : "my_project" }
 Waiting for operation to complete...
-<Mock name='mock.export_entities().result()' id='4413415456'>
+<Mock name='mock.export_documents().result()' id='4528211664'>
+{'request': name: "projects/my_project/databases/db_id"
+output_uri_prefix: "gs://my-bucket/2023-10-25T12:42:00Z"
+}
 .Waiting for operation to complete...
-<Mock name='mock.export_entities().result()' id='4413869072'>
+<Mock name='mock.export_entities().result()' id='4528592144'>
+.Waiting for operation to complete...
+<Mock name='mock.export_entities().result()' id='4528728976'>
 .
 ----------------------------------------------------------------------
-Ran 2 tests in 0.013s
+Ran 3 tests in 0.005s
 
 OK
 ```

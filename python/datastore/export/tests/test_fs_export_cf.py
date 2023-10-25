@@ -15,7 +15,7 @@ mock_context.timestamp = "2023-10-23T22:00:00.000Z"
 @patch('google.cloud.firestore_admin_v1.FirestoreAdminClient.export_documents')
 def test_firestore_export(mock_get):
     # Defining the bucket URL
-    bucket = "gs://my-bucket"
+    bucket = "gs://my-bucket/"
     db_id = "db_id"
     # Creating a JSON string with the bucket URL and project ID
     json_string = '{{ "export_bucket": "{bucket}" , "db_id": "{db_id}", "project_id" : "my_project" }}'.format(

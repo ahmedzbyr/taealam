@@ -18,7 +18,7 @@ mock_context.timestamp = "2023-10-23T22:00:00.000Z"
 @patch('google.cloud.datastore_admin_v1.DatastoreAdminClient.export_entities')
 def test_datastore_export(mock_get):
     # Defining the bucket URL
-    bucket = "gs://my-bucket"
+    bucket = "gs://my-bucket/"
     # Creating a JSON string with the bucket URL and project ID
     json_string = '{{ "export_bucket": "{bucket}" , "project_id" : "my_project" }}'.format(
         bucket=bucket)
@@ -43,7 +43,7 @@ def test_datastore_export(mock_get):
 @patch('google.cloud.datastore_admin_v1.DatastoreAdminClient.export_entities')
 def test_datastore_export_entity_filter(mock_get):
     # Defining test values for the bucket URL, entity kinds, and namespace IDs
-    bucket = "gs://my-bucket"
+    bucket = "gs://my-bucket/"
     kinds = ['default', 'customers']
     namespace_ids = ['projectA', 'projectB']
     # Creating a JSON string with the test values
