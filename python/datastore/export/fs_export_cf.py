@@ -25,13 +25,13 @@ client = firestore_admin_v1.FirestoreAdminClient()
 #
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
-# json_data = {
-#     "project_id": "elevated-column-400011",
-#     "db_id" : "db_id"
-#     "export_bucket": "gs://fs-export-bucket/",
-#     "collection_ids": ["abc", "xyz", "axz"],
-#     "namespace_ids": ["my_nm"]
-# }
+json_data = {
+    "project_id": "elevated-column-400011",
+    "db_id": "db_id",
+    "export_bucket": "gs://fs-export-bucket/",
+    "collection_ids": ["abc", "xyz", "axz"],
+    "namespace_ids": ["my_nm"]
+}
 
 
 def round_time(dt=None, date_delta=datetime.timedelta(minutes=1), to='down'):
@@ -97,3 +97,10 @@ def firestore_export(event, context):
     # Handle the response.
     # In this case, print the JSON representation of the response to the console.
     print(response)
+
+
+if __name__ == "__main__":
+    print("Running the function using the JSON below..")
+    print("-------------------------------------------")
+    print(json.dumps(json_data, indent=2))
+    # firestore_export(json.dumps(json_data), None)

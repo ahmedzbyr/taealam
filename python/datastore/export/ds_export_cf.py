@@ -25,12 +25,12 @@ client = datastore_admin_v1.DatastoreAdminClient()
 #
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
-# json_data = {
-#     "project_id": "elevated-column-400011",
-#     "export_bucket": "gs://ds-export-bucket/",
-#     "kinds": ["abc", "xyz", "axz"],
-#     "namespace_ids": ["my_nm"]
-# }
+json_data = {
+    "project_id": "elevated-column-400011",
+    "export_bucket": "gs://ds-export-bucket/",
+    "kinds": ["abc", "xyz", "axz"],
+    "namespace_ids": ["my_nm"]
+}
 
 
 def datastore_export(event, context):
@@ -85,3 +85,10 @@ def datastore_export(event, context):
     # Handle the response.
     # In this case, print the JSON representation of the response to the console.
     print(response)
+
+
+if __name__ == "__main__":
+    print("Running the function using the JSON below..")
+    print("-------------------------------------------")
+    print(json.dumps(json_data, indent=2))
+    # datastore_export(json.dumps(json_data), None)

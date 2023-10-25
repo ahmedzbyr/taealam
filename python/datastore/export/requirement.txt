@@ -1,1 +1,3 @@
 google-cloud-datastore
+google-cloud-firestore
+nose2
