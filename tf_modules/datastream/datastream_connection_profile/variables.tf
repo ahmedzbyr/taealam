@@ -97,7 +97,7 @@ variable "oracle_profile" {
         "port",
         "database_service",
         "connection_attributes"
-      ]))
+      ])) == 0
     )
     error_message = "ERROR. Please check \"oracle_profile\". We expect only the below keys.\n\n- `hostname` - (Required) Hostname for the Oracle connection.\n- `port` - (Optional) Port for the Oracle connection, default value is 1521.\n- `username` - (Required) Username for the Oracle connection.\n- `password` - (Required) Password for the Oracle connection. :warning: IMPORTANT: Use `var.secret` to set this variable.\n- `database_service` - (Required) Database for the Oracle connection.\n- `connection_attributes` - (Optional) `map (key: string, value: string)` Connection string attributes"
   }
@@ -181,7 +181,7 @@ variable "mysql_profile" {
         "username",
         "port",
         "ssl_config"
-      ]))
+      ])) == 0
     )
     error_message = "ERROR. Please check \"mysql_profile\". We expect only the below keys.\n\n- `hostname` - (Required) Hostname for the MySQL connection.\n- `port` - (Optional) Port for the MySQL connection, default value is 3306.\n- `username` - (Required) Username for the MySQL connection.\n- `password` - (Required) Password for the MySQL connection. :warning: IMPORTANT: Use `var.secret` to set this variable.\n- `ssl_config` - (Optional) SSL configuration for the MySQL connection. Structure is documented below."
   }
@@ -229,7 +229,7 @@ variable "postgresql_profile" {
         "username",
         "port",
         "database"
-      ]))
+      ])) == 0
     )
     error_message = "ERROR. Please check \"postgresql_profile\". We expect only the below keys.\n\n- `hostname` - (Required) Hostname for the PostgreSQL connection.\n- `port` - (Optional) Port for the PostgreSQL connection, default value is 5432.\n- `username` - (Required) Username for the PostgreSQL connection.\n- `database` - (Required) Database for the PostgreSQL connection."
   }
@@ -349,7 +349,7 @@ variable "forward_ssh_connectivity" {
         "hostname",
         "username",
         "port"
-      ]))
+      ])) == 0
     )
     error_message = "ERROR. Please check \"forward_ssh_connectivity\". We expect only the below keys.\n\n - `hostname` - (Required) Hostname for the SSH tunnel.\n - `username` - (Required) Username for the SSH tunnel.\n - `port` - (Optional) Port for the SSH tunnel, default value is 22."
   }
