@@ -7,6 +7,7 @@ module "create_connection_profile_gcs" {
   labels = {
     key = "value"
   }
+
   gcs_profile = {
     bucket = google_storage_bucket.ahmed.name
   }
