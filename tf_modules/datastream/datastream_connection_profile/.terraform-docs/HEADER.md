@@ -14,7 +14,6 @@ This module allows us to establish connection profiles for a variety of source t
 
 These connection profiles serve as the bridge for Datastream to efficiently capture and replicate data across different platforms and systems.
 
-
 ## Managing Secrets
 
 In this module, sensitive information is securely managed through a variable called `secret`. This variable contains all the confidential data, such as passwords and keys, required for various configurations within the module. There are two recommended methods for handling this variable:
@@ -22,7 +21,7 @@ In this module, sensitive information is securely managed through a variable cal
 1. **Vault Storage (Recommended):** The `secret` variable can be securely stored in a vault system, ensuring that sensitive data is protected and managed centrally.
 2. **Local Node Secret:** Alternatively, you can store the `secret` variable as a secret on the node where the module is executed. It can then be passed as an environment variable, providing an additional layer of security by hiding the information stored in the variable during execution.
 
-### Example for **Vault Storage (Recommended):** 
+### Example for **Vault Storage (Recommended):**
 
 ```hcl
 # Create a Vault KV version 2 secret engine mount at the specified path.
@@ -77,7 +76,7 @@ module "create_connection_profile_gcs" {
 }
 ```
 
-### Example for  **Local Node Secret:** Using `TF_VAR` Environment Variables
+### Example for  **Local Node Secret:** Using `TF_VAR` Environment Variables
 
 You can utilize environment variables to set Terraform variables. These environment variables should follow the format `TF_VAR_name`, and Terraform will prioritize their values when searching for variable assignments. For instance:
 
@@ -89,7 +88,6 @@ export TF_VAR_amap='{ foo = "bar", baz = "qux" }'
 ```
 
 Here is how we setup our secret in the environment variable.
-
 
 ```bash
 export TF_VAR_secret='{ postgresql_profile = { password = "secret" }}'
