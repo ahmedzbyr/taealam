@@ -170,7 +170,7 @@ module "create_connection_profile_postgresql" {
   #   Adding it here for testing only.
   secret = jsondecode(data.vault_generic_secret.get_secret.data_json)
 }
-
+```
 
 In this Terraform configuration:
 
