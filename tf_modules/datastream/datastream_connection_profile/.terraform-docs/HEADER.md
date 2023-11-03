@@ -78,10 +78,6 @@ secret = {
 #   export VAULT_ADDR='http://127.0.0.1:8200'
 #   export VAULT_TOKEN="hvs.6j4cuewowBGit65rheNoceI7" 
 #
-provider "vault" {
-  address = "http://127.0.0.1:8200"        # Vault server address this is for testing
-  token   = "hvs.FEinfYx2Sf7yDTbIxRskJXJj" # Authentication token for Vault 
-}
 
 # Create a Vault KV version 1 mount for connection profiles.
 resource "vault_mount" "ds_conn_profiles" {
