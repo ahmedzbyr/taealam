@@ -1,23 +1,18 @@
-## Setting Up HashiCorp Vault
+## Setting Up HashiCorp Vault for Secret Management
 
-In this guide, we'll walk you through the process of setting up HashiCorp Vault to securely manage secrets. We'll cover installing and configuring Vault, storing secrets, and using Terraform to extract and manage secrets for your infrastructure.
+In this comprehensive guide, we will walk you through the process of setting up HashiCorp Vault to effectively manage your secrets. The guide is divided into two phases:
 
-We will do this using 2 phases to do this.
+### Phase 1: Setting Up Vault on a Workstation
 
-1. Setup the vault on a workstation.
-2. Store the secret on the vault and retrive it.
+In this phase, we'll cover the steps required to install and configure HashiCorp Vault on your workstation for secure secret management.
 
-##  Phase 1. Setup the vault on a workstation
+#### Step 1: Install HashiCorp Vault
 
-Setting up a vault setup on the workstation.
+Begin by installing HashiCorp Vault on your workstation. You can find platform-specific installation instructions in the official [HashiCorp Vault Installation Guide](https://learn.hashicorp.com/vault/getting-started/install).
 
-### Step 1: Install HashiCorp Vault
+#### Step 2: Start Vault Server
 
-You can install HashiCorp Vault by following the official installation instructions for your platform: [HashiCorp Vault Installation Guide](https://learn.hashicorp.com/vault/getting-started/install)
-
-### Step 2: Start Vault Server
-
-Once installed, start the Vault server in development mode for testing purposes:
+After successfully installing Vault, start the Vault server in development mode, which is ideal for testing purposes:
 
 ```bash
 vault server -dev
@@ -44,39 +39,39 @@ Root Token: hvs.nX8Ji1bhdvVyIhjGYtWWjLRL
 Development mode should NOT be used in production installations!
 ```
 
-### Step 3: Set environment variables
+#### Step 3: Set Environment Variables
 
-1. Launch a new terminal session.
-2. Copy and run the `export VAULT_ADDR ...` command from the terminal output. This will configure the Vault client to talk to the dev server.
+1. Open a new terminal session.
+2. Copy and run the `export VAULT_ADDR ...` command from the terminal output. This command configures the Vault client to communicate with the development server:
 
-```
-export VAULT_ADDR='http://127.0.0.1:8200'
-```
+   ```bash
+   $ export VAULT_ADDR='http://127.0.0.1:8200'
+   ```
 
-Vault CLI determines which Vault servers to send requests using the `VAULT_ADDR` environment variable.
+   The `VAULT_ADDR` environment variable tells the Vault CLI where to send requests.
 
-3. Save the unseal key somewhere. Don't worry about *how* to save this securely. For now, just save it anywhere.
-4. Set the `VAULT_TOKEN` environment variable value to the generated Root Token value displayed in the terminal output.
+3. Save the unseal key securely. While this guide doesn't cover secure storage, ensure you keep it in a safe place for future use.
+4. Set the `VAULT_TOKEN` environment variable to the generated root token from the terminal output:
 
-Example:
+   ```bash
+   $ export VAULT_TOKEN="hvs.6j4cuewowBGit65rheNoceI7"
+   ```
 
-```
-export VAULT_TOKEN="hvs.6j4cuewowBGit65rheNoceI7"
-```
+   This token is necessary for interacting with Vault via the CLI. In a production setup, take additional measures to manage tokens securely.
 
-To interact with Vault, you must provide a valid token. Setting this environment variable is a way to provide the token to Vault via CLI. Later, in the [Authentication](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-authentication) tutorial, you will learn to use the `vault login <token_value>` command to authenticate with Vault.
+### Phase 2: Storing and Retrieving Secrets
 
-##  Phase 2. Store the secret on the vault and retrive it.
+In this phase, we'll demonstrate how to store and retrieve secrets using both the Vault CLI and Terraform.
 
-### Step 1: Enable Key-Value (KV) Secret Engine
+#### Step 1: Enable Key-Value (KV) Secret Engine
 
-Enable the Key-Value (KV) version 1 secret engine for storing secrets:
+Start by enabling the Key-Value (KV) version 1 secret engine for storing secrets:
 
 ```bash
 vault secrets enable -path=profiles kv
 ```
 
-We can setup the same configuration using the below terraform code.
+Alternatively, you can achieve the same configuration using the following Terraform code:
 
 ```hcl
 # Create a Vault KV version 1 mount for connection profiles.
@@ -89,15 +84,15 @@ resource "vault_mount" "ds_conn_profiles" {
 }
 ```
 
-### Step 2: Store a Secret
+#### Step 2: Store a Secret
 
-Store a secret in Vault, for example, a PostgreSQL password:
+Store a secret in Vault, such as a PostgreSQL password, using the Vault CLI:
 
 ```bash
 vault kv put profiles/secret/postgresql_profile password=my_secret
 ```
 
-Same can be done using terraform below.
+Alternatively, you can store secrets using Terraform as shown below:
 
 ```hcl
 # Define a generic Vault secret for connection profiles.
@@ -113,10 +108,9 @@ resource "vault_generic_secret" "ds_conn_profiles" {
 }
 ```
 
-## Terraform Configuration to Extract Secret from Vault
+### Terraform Configuration for Extracting Secrets from Vault
 
-Now that you have Vault set up with a stored secret, you can use Terraform to retrieve this secret for your infrastructure.
-We are storing the secret for a postgresql database and retriving it to setup and connection profile for the Datastream on google.
+Now that Vault is set up with stored secrets, you can utilize Terraform to extract these secrets for your infrastructure. In this example, we are storing a secret for a PostgreSQL database and retrieving it to configure a connection profile for Datastream on Google Cloud.
 
 ```hcl
 # Create a Vault KV version 1 mount for connection profiles.
@@ -176,7 +170,7 @@ module "create_connection_profile_postgresql" {
   #   Adding it here for testing only.
   secret = jsondecode(data.vault_generic_secret.get_secret.data_json)
 }
-```
+
 
 In this Terraform configuration:
 
