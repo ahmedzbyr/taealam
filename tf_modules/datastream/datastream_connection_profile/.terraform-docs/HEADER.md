@@ -21,6 +21,55 @@ In this module, sensitive information is securely managed through a variable cal
 1. **Vault Storage (Recommended):** The `secret` variable can be securely stored in a vault system, ensuring that sensitive data is protected and managed centrally.
 2. **Local Node Secret:** Alternatively, you can store the `secret` variable as a secret on the node where the module is executed. It can then be passed as an environment variable, providing an additional layer of security by hiding the information stored in the variable during execution.
 
+### How to set `secret` variable
+
+When using this module, it's important to properly configure the `secret` variable to manage sensitive information for different database profiles. Below are examples of how to structure the `secret` variable for specific database types when using this module.
+
+#### Postgresql Secret
+
+```hcl
+secret = {
+  postgresql_profile = {
+    password = "secret" # Password for PostgreSQL profile (Required if using postgresql_profile)
+  }
+}
+```
+
+#### Oracle Secret
+
+```hcl
+secret = {
+  oracle_profile = {
+    password = "secret" # Password for Oracle profile (Required if using oracle_profile)
+  }
+}
+```
+
+#### MySQL Secret
+
+```hcl
+secret = {
+  mysql_profile = {
+    password           = "secret"        # Password for MySQL profile (Required if using mysql_profile)
+    client_key         = "pem_file_here" # Client key for MySQL profile (Optional but required if ssl_config is required)
+    ca_certificate     = "pem_file_here" # CA certificate for MySQL profile (Optional but required if ssl_config is required)
+    client_certificate = "pem_file_here" # Client certificate for MySQL profile (Optional but required if ssl_config is required)
+  }
+}
+```
+
+#### Forward SSH Connectivity Secret
+
+```hcl
+secret = {
+  forward_ssh_connectivity = {
+    password = "secret"
+    # or // Either not BOTH
+    # private_key = "pem_file_here"
+  }
+}
+```
+
 ### Example for **Vault Storage (Recommended):**
 
 ```hcl

@@ -1,22 +1,27 @@
+# Configuration for Each Profile Type
 
-- [ Example - Create a connection profile for Oracle database](#example---create-a-connection-profile-for-oracle-database)
-  - [Configure a Self-Hosted Oracle Database:](#configure-a-self-hosted-oracle-database)
-    - [Step 1: Verify Database Mode](#step-1-verify-database-mode)
-    - [Step 2: Define Data Retention Policy](#step-2-define-data-retention-policy)
-    - [Step 3: Configure Log File Rotation](#step-3-configure-log-file-rotation)
-    - [Step 4: Enable Supplemental Log Data](#step-4-enable-supplemental-log-data)
-    - [Step 5: Grant Privileges to User Account](#step-5-grant-privileges-to-user-account)
-  - [JSON representation](#json-representation)
-  - [ Connectivity Methods](#connectivity-methods)
-- [ Example - Create a connection profile for MySQL database](#example---create-a-connection-profile-for-mysql-database)
-  - [ Configure a Cloud SQL for MySQL database:](#configure-a-cloud-sql-for-mysql-database)
-  - [JSON representation](#json-representation-1)
-- [Example - Create a connection profile for Cloud PostgreSQL database](#example---create-a-connection-profile-for-cloud-postgresql-database)
-  - [ Configure a Cloud SQL for PostgreSQL database:](#configure-a-cloud-sql-for-postgresql-database)
-    - [Enable Logical Replication](#enable-logical-replication)
-    - [Create a Publication and a Replication Slot](#create-a-publication-and-a-replication-slot)
-  - [Create a Datastream User](#create-a-datastream-user)
-  - [JSON representation](#json-representation-2)
+These connection profiles play a crucial role in enabling Datastream to efficiently transfer data from the source database to the specified destination locations.
+
+
+- [Configuration for Each Profile Type](#configuration-for-each-profile-type)
+  - [ Example - Create a connection profile for Oracle database](#example---create-a-connection-profile-for-oracle-database)
+    - [Configure a Self-Hosted Oracle Database:](#configure-a-self-hosted-oracle-database)
+      - [Step 1: Verify Database Mode](#step-1-verify-database-mode)
+      - [Step 2: Define Data Retention Policy](#step-2-define-data-retention-policy)
+      - [Step 3: Configure Log File Rotation](#step-3-configure-log-file-rotation)
+      - [Step 4: Enable Supplemental Log Data](#step-4-enable-supplemental-log-data)
+      - [Step 5: Grant Privileges to User Account](#step-5-grant-privileges-to-user-account)
+    - [JSON representation](#json-representation)
+    - [ Connectivity Methods](#connectivity-methods)
+  - [ Example - Create a connection profile for MySQL database](#example---create-a-connection-profile-for-mysql-database)
+    - [ Configure a Cloud SQL for MySQL database:](#configure-a-cloud-sql-for-mysql-database)
+    - [JSON representation](#json-representation-1)
+  - [Example - Create a connection profile for Cloud PostgreSQL database](#example---create-a-connection-profile-for-cloud-postgresql-database)
+    - [ Configure a Cloud SQL for PostgreSQL database:](#configure-a-cloud-sql-for-postgresql-database)
+      - [Enable Logical Replication](#enable-logical-replication)
+      - [Create a Publication and a Replication Slot](#create-a-publication-and-a-replication-slot)
+    - [Create a Datastream User](#create-a-datastream-user)
+    - [JSON representation](#json-representation-2)
 
 
 ##  Example - Create a connection profile for Oracle database
@@ -118,16 +123,14 @@ This guide outlines the steps to configure a self-hosted Oracle database for Cha
      GRANT LOGMINING TO USER_NAME;
      ```
 
-| Field                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Connection profile name | Enter the display name of the connection profile to the source Oracle database. This is used in the connection profile list as well as when an existing connection profile is selected in the creation of a stream.                                                                                                                                                                                                                                          |
-| Connection profile ID   | Datastream populates this field automatically based on the connection profile name that you enter. You can keep the ID that's auto-generated or change it.                                                                                                                                                                                                                                                                                                   |
-| Region                  | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
-| Hostname or IP          | Enter a hostname or IP address that Datastream can use to connect to the source Oracle database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. :books: NOTE: If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting, provide the public IP address. |
-| Port                    | Enter the port number that's reserved for the source database (The default port is typically 1521.).                                                                                                                                                                                                                                                                                                                                                         |
-| Username                | Enter the username of the account for the source database (for example, ROOT). This is the Datastream user that you created for the database. For more information about creating this user, see Configure your source Oracle database.                                                                                                                                                                                                                      |
-| Password                | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                   |
-| System identifier (SID) | Enter the service that ensures that the source Oracle database is protected and monitored. For Oracle databases, the database service is typically ORCL. For pluggable databases, SID is the pluggable database name.                                                                                                                                                                                                                                        |
+| Field          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Location       | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
+| Hostname or IP | Enter a hostname or IP address that Datastream can use to connect to the source Oracle database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. :books: NOTE: If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting, provide the public IP address. |
+| Port           | Enter the port number that's reserved for the source database (The default port is typically 1521.).                                                                                                                                                                                                                                                                                                                                                         |
+| Username       | Enter the username of the account for the source database (for example, ROOT). This is the Datastream user that you created for the database. For more information about creating this user, see Configure your source Oracle database.                                                                                                                                                                                                                      |
+| Password       | Enter the password of the account for the source database. :warning: NOTE: Set this in the `secret` variable.                                                                                                                                                                                                                                                                                                                                                |
+
 
 ### JSON representation
 
@@ -136,7 +139,7 @@ This guide outlines the steps to configure a self-hosted Oracle database for Cha
   "project": string,
   "display_name": string,
   "connection_profile_id": string,
-  "lcoation": string,
+  "location": string,
   "labels": {
     string: string,
     ...
@@ -193,15 +196,13 @@ GRANT REPLICATION SLAVE, SELECT, REPLICATION CLIENT ON *.* TO 'datastream'@'%';
 FLUSH PRIVILEGES;
 ```
 
-| Field                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Connection profile name | Enter the display name of the connection profile to the source MySQL database. This is used in the connection profile list as well as when an existing connection profile is selected in the creation of a stream.                                                                                                                                                                                                                                           |
-| Connection profile ID   | Datastream populates this field automatically based on the connection profile name that you enter. You can keep the ID that's auto-generated or change it.                                                                                                                                                                                                                                                                                                   |
-| Region                  | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
-| Hostname or IP          | Enter a hostname or IP address that Datastream can use to connect to the source MySQL database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting or Forward-SSH, provide the public IP address. |
-| Port                    | Enter the port number that's reserved for the source database (The default port is typically 3306.).                                                                                                                                                                                                                                                                                                                                                         |
-| Username                | Enter the username of the account for the source database (for example, root). This is the Datastream user that you created for the database. For more information about creating this user, see Configure a source MySQL database.                                                                                                                                                                                                                          |
-| Password                | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Field          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Location       | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
+| Hostname or IP | Enter a hostname or IP address that Datastream can use to connect to the source MySQL database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting or Forward-SSH, provide the public IP address. |
+| Port           | Enter the port number that's reserved for the source database (The default port is typically 3306.).                                                                                                                                                                                                                                                                                                                                                         |
+| Username       | Enter the username of the account for the source database (for example, root). This is the Datastream user that you created for the database. For more information about creating this user, see Configure a source MySQL database.                                                                                                                                                                                                                          |
+| Password       | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### JSON representation
 
@@ -210,7 +211,7 @@ FLUSH PRIVILEGES;
   "project": string,
   "display_name": string,
   "connection_profile_id": string,
-  "lcoation": string,
+  "location": string,
   "labels": {
     string: string,
     ...
@@ -251,6 +252,17 @@ The following sections cover how to configure a Cloud SQL for PostgreSQL databas
 6. Set the flag value to `on`.
 7. Click **SAVE** to save your changes. You'll need to restart your instance to update it with the changes.
 8. After your instance has been restarted, confirm your changes under **Database flags** on the **Overview** page.
+
+Here's a markdown table based on the provided information:
+
+| Field          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Location       | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                        |
+| Hostname or IP | Enter a hostname or IP address that Datastream can use to connect to the source PostgreSQL database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting or Forward-SSH, provide the public IP address. |
+| Port           | Enter the port number that's reserved for the source database (The default port for PostgreSQL is typically 5432.).                                                                                                                                                                                                                                                                                                                                               |
+| Username       | Enter the username of the account for the source database (for example, root). This is the Datastream user that you created for the database. For more information about creating this user, see Configure your source PostgreSQL database.                                                                                                                                                                                                                       |
+| Password       | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Database       | Enter the name that identifies the database instance. For PostgreSQL databases, this is typically postgres.                                                                                                                                                                                                                                                                                                                                                       |
 
 #### Create a Publication and a Replication Slot
 
@@ -326,7 +338,7 @@ This guide provides step-by-step instructions for configuring a Cloud SQL for Po
   "project": string,
   "display_name": string,
   "connection_profile_id": string,
-  "lcoation": string,
+  "location": string,
   "labels": {
     string: string,
     ...
