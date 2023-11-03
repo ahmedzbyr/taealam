@@ -1,7 +1,10 @@
 # Define the Vault provider configuration.
 provider "vault" {
-  address = "http://127.0.0.1:8200"        # Vault server address
-  token   = "hvs.6j4cuewowBGit65rheNoceI7" # Authentication token for Vault
+  address = "http://127.0.0.1:8200" # Vault server address
+
+  # Authentication token for Vault DO NOT DO THIS, 
+  # THIS IS HERE AS AN EXAMPLE FOR TESTING
+  token = "hvs.6j4cuewowBGit65rheNoceI7"
 }
 
 # Create a Vault KV version 1 mount for connection profiles.
