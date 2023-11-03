@@ -15,8 +15,7 @@ header:
 
 # Data Export from Datastore & Firestore
 
-In this blog post, we will venture into exporting data from Firestore and Datastore modes. Find the code on [Github](https://github.com/ahmedzbyr/taealam/tree/master/python/datastore/export). 
-
+In this blog post, we will venture into exporting data from Firestore and Datastore modes. Find the code on [Github](https://github.com/ahmedzbyr/taealam/tree/master/python/datastore/export).
 
 ## `Datastore` Data Exports in GCP with Python
 
@@ -82,7 +81,7 @@ def datastore_export(event, context):
 ```
 
 `datastore_export` is the primary function that handles the export process. It checks for a 'data' field in the event argument to decode the JSON payload accordingly. The request could be from cloud function which is `b64encode`d. Else we take the information directly from the Cloud function as it is.
- 
+
 ```python
     # Check if the event contains 'data' field which is expected when triggered via Cloud Scheduler.
     # If so, decode the inner data field of the JSON payload.
@@ -181,7 +180,6 @@ The script waits for the operation to complete by calling `operation.result()`. 
 We will now delve into a Python script designed to automate the export of data from Google Cloud Firestore to Google Cloud Storage. This script can be triggered by Google Cloud Scheduler or directly from a Cloud Function. Let's break down the code to understand its workings and how to potentially modify it for your use case.
 
 Code Location : [fs_export_cf.py](https://github.com/ahmedzbyr/taealam/blob/master/python/datastore/export/fs_export_cf.py)
-
 
 ### Importing Necessary Libraries
 
