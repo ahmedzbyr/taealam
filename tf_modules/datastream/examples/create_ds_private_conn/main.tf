@@ -14,3 +14,19 @@ module "create_private_connection" {
     subnet = "10.142.128.0/29"                                         # IP range for the subnet
   }
 }
+
+output "id" {
+  value = module.create_private_connection.this_private_connection_id
+}
+
+output "name" {
+  value = module.create_private_connection.this_private_connection_name
+}
+
+output "state" {
+  value = module.create_private_connection.this_private_connection_state
+}
+
+output "error" {
+  value = module.create_private_connection.this_private_connection_error
+}
