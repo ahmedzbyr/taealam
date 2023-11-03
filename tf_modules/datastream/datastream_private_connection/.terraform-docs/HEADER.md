@@ -1,5 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
-
 # Configuring Private Connectivity in Google Cloud Datastream
 
 In the module will guide you through the process of creating a private connectivity configuration in Google Cloud Datastream. Private connectivity configurations are essential for secure data communication between Datastream and data sources, whether they are located within Google Cloud or external sources connected via VPN or Interconnect. This communication is facilitated through a Virtual Private Cloud (VPC) peering connection, ensuring the privacy and security of your data.
@@ -42,9 +40,9 @@ Before you proceed with creating a private connectivity configuration, ensure th
 
    - *FIREWALL-RULE-NAME*: Name of the firewall rule to create.
    - *PRIORITY*: Priority of the rule (integer between 0 and 65535). It should be lower than the block traffic rule's value, if it exists.
-   - *PRIVATE\_CONNECTIVITY\_VPC*: VPC network capable of peering with Datastream's private network, meeting specified restrictions. This is the VPC you specify when creating your private connectivity configuration.
-   - *VPC\_PROJECT*: Project associated with the VPC network.
-   - *FIREWALL\_RULES*: List of protocols and ports to which the rule applies (e.g., `tcp:80`). The rule must allow TCP traffic to the IP address and port of the source database or proxy. Consider the actual usage of your configuration, as private connectivity can support multiple databases.
+   - *PRIVATE_CONNECTIVITY_VPC*: VPC network capable of peering with Datastream's private network, meeting specified restrictions. This is the VPC you specify when creating your private connectivity configuration.
+   - *VPC_PROJECT*: Project associated with the VPC network.
+   - *FIREWALL_RULES*: List of protocols and ports to which the rule applies (e.g., `tcp:80`). The rule must allow TCP traffic to the IP address and port of the source database or proxy. Consider the actual usage of your configuration, as private connectivity can support multiple databases.
    - *IP-RANGE*: Range of IP addresses used by Datastream to communicate with the source database. This matches the range you indicate in the "Allocate an IP range" field when creating your [private connectivity configuration](https://cloud.google.com/datastream/docs/create-a-private-connectivity-configuration#create-the-configuration).
 
    Additionally, you may need to create an identical egress firewall rule to allow traffic back to Datastream.
@@ -75,52 +73,3 @@ If you are using a [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc), f
 - `compute.subnetworks.*`
 
 Refer to [Create and Manage Custom Roles](https://cloud.google.com/iam/docs/creating-custom-roles) for more information on custom roles.
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_display_name"></a> [display\_name](#input\_display\_name) | Display name. | `string` | n/a | yes |
-| <a name="input_labels"></a> [labels](#input\_labels) | Labels for the connection. <br><br>Note: This field is non-authoritative, and will only manage the labels present in your configuration. Also please refer to the field `effective_labels` for all of the labels present on the resource.<br><br>`effective_labels` - All of labels (key/value pairs) present on the resource in GCP, including the labels configured through Terraform, other clients and services. | `any` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | The name of the location this private connection is located in. | `string` | n/a | yes |
-| <a name="input_private_connection_id"></a> [private\_connection\_id](#input\_private\_connection\_id) | The private connection identifier. | `string` | n/a | yes |
-| <a name="input_project"></a> [project](#input\_project) | The ID of the project in which the resource belongs. | `string` | n/a | yes |
-| <a name="input_vpc_peering_config"></a> [vpc\_peering\_config](#input\_vpc\_peering\_config) | The VPC Peering configuration is used to create VPC peering between Datastream and the consumer's VPC.<br><br>`vpc`    - (Required) Fully qualified name of the VPC that Datastream will peer to. Format: `projects/{project}/global/{networks}/{name}` <br>`subnet` - (Required) A free subnet for peering. (CIDR of /29)<br><br>**JSON representation**<pre>{<br>  "vpc": string,<br>  "subnet": string<br>}</pre> | `any` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_this_private_connection_effective_labels"></a> [this\_private\_connection\_effective\_labels](#output\_this\_private\_connection\_effective\_labels) | All of labels (key/value pairs) present on the resource in GCP, including the labels configured through Terraform, other clients and services. |
-| <a name="output_this_private_connection_error"></a> [this\_private\_connection\_error](#output\_this\_private\_connection\_error) | The PrivateConnection error in case of failure. |
-| <a name="output_this_private_connection_id"></a> [this\_private\_connection\_id](#output\_this\_private\_connection\_id) | An identifier for the resource with format `projects/{{project}}/locations/{{location}}/privateConnections/{{private_connection_id}}` |
-| <a name="output_this_private_connection_name"></a> [this\_private\_connection\_name](#output\_this\_private\_connection\_name) | The resource's name. |
-| <a name="output_this_private_connection_state"></a> [this\_private\_connection\_state](#output\_this\_private\_connection\_state) | State of the PrivateConnection. |
-| <a name="output_this_private_connection_terraform_labels"></a> [this\_private\_connection\_terraform\_labels](#output\_this\_private\_connection\_terraform\_labels) | The combination of labels configured directly on the resource and default labels configured on the provider. |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 5.2.0 |
-
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_google"></a> [google](#requirement\_google) | >= 5.2.0 |
-
-## Modules
-
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [google_datastream_private_connection.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/datastream_private_connection) | resource |
-
----
-
----
-<!-- END_TF_DOCS -->    
