@@ -1,9 +1,9 @@
 module "create_private_connection" {
   source                = "../../datastream_private_connection"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
-  display_name          = "ahmd-priv-connec"       # Display name for the connection profile
-  location              = "us-east1"               # Location of the connection profile
-  private_connection_id = "ahmd-priv-connec"       # Unique identifier for the connection profile
+  project               = "my-project-id"    # Project where the connection profile will be created
+  display_name          = "ahmd-priv-connec" # Display name for the connection profile
+  location              = "us-east1"         # Location of the connection profile
+  private_connection_id = "ahmd-priv-connec" # Unique identifier for the connection profile
 
   labels = {
     key = "value"

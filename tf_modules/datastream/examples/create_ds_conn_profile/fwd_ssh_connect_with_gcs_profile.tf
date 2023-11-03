@@ -1,9 +1,9 @@
 module "create_connection_profile_fwdsshgcs" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
-  display_name          = "ahmd-connec-fwdsshgcs"  # Display name for the connection profile
-  location              = "us-east1"               # Location of the connection profile
-  connection_profile_id = "ahmd-connec-fwdsshgcs"  # Unique identifier for the connection profile
+  project               = "my-project-id"         # Project where the connection profile will be created
+  display_name          = "ahmd-connec-fwdsshgcs" # Display name for the connection profile
+  location              = "us-east1"              # Location of the connection profile
+  connection_profile_id = "ahmd-connec-fwdsshgcs" # Unique identifier for the connection profile
 
   labels = {
     key = "value"
@@ -34,7 +34,7 @@ module "create_connection_profile_fwdsshgcs" {
 }
 
 resource "google_storage_bucket" "fwdsshgcs" {
-  project       = "elevated-column-400011"
+  project       = "my-project-id"
   name          = "test_src_connection"
   location      = "us-east1"
   force_destroy = true

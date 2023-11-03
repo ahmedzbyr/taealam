@@ -132,7 +132,7 @@ output "secret_information" {
 # Create a connection profile for PostgreSQL using a module.
 module "create_connection_profile_postgresql" {
   source                = "../../datastream_connection_profile" # Path to the connection profile module
-  project               = "elevated-column-400011"              # Project where the connection profile will be created
+  project               = "my-project-id"              # Project where the connection profile will be created
   display_name          = "ahmd-connec-postgresql"              # Display name for the connection profile
   location              = "us-east1"                            # Location of the connection profile
   connection_profile_id = "ahmd-connec-postgresql"              # Unique identifier for the connection profile
@@ -172,7 +172,7 @@ Important fields below.
 ```hcl
 module "create_connection_profile_gcs" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-gcs"        # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-gcs"        # Unique identifier for the connection profile
@@ -203,7 +203,7 @@ Code Location : [github](./bigquery_profile.tf)
 ```hcl
 module "create_connection_profile_bq" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-bq"         # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-bq"         # Unique identifier for the connection profile
@@ -232,7 +232,7 @@ Code Location : [github](./mysql_profile.tf)
 ```hcl
 module "create_connection_profile_mysql" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-mysql"      # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-mysql"      # Unique identifier for the connection profile
@@ -285,7 +285,7 @@ Here's a markdown table based on the provided information:
 ```hcl
 module "create_connection_profile_postgresql" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-postgresql" # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-postgresql" # Unique identifier for the connection profile
@@ -332,7 +332,7 @@ Code Location : [github](./oracle_profile.tf)
 ```hcl
 module "create_connection_profile_oracle" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-oracle"     # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-oracle"     # Unique identifier for the connection profile
