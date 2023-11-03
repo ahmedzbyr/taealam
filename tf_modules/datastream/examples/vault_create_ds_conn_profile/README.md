@@ -1,18 +1,17 @@
-# Datastream Connection Profiles
+# Vault Example to set/retrive `secret` from Vault
 
-Datastream is a user-friendly and serverless change data capture (CDC) and replication service designed to enable dependable data synchronization with minimal latency.
+This is an example to set the secret in vault and retrive the information from the vault. 
 
-The creation of connection profiles is essential for Datastream to facilitate the seamless transfer of data from source databases to the intended destinations.
+- [Vault Example to set/retrive `secret` from Vault](#vault-example-to-setretrive-secret-from-vault)
+  - [Managing Secrets](#managing-secrets)
+    - [How to set `secret` variable](#how-to-set-secret-variable)
+      - [Postgresql Secret](#postgresql-secret)
+      - [Oracle Secret](#oracle-secret)
+      - [MySQL Secret](#mysql-secret)
+      - [Forward SSH Connectivity Secret](#forward-ssh-connectivity-secret)
+    - [Example for **Vault Storage (Recommended):**](#example-for-vault-storage-recommended)
+  - [How to Use this terraform example.](#how-to-use-this-terraform-example)
 
-This module allows us to establish connection profiles for a variety of source types, including:
-
-- Oracle
-- MySQL
-- PostgreSQL
-- Google Cloud Storage (GCS) buckets
-- BigQuery
-
-These connection profiles serve as the bridge for Datastream to efficiently capture and replicate data across different platforms and systems.
 
 ## Managing Secrets
 
@@ -80,7 +79,7 @@ secret = {
 #
 provider "vault" {
   address = "http://127.0.0.1:8200"        # Vault server address this is for testing
-  token   = "hvs.FEinfYx2Sf7yDTbIxRskJXJj" # Authentication token for Vault 
+  token   = "hvs.6j4cuewowBGit65rheNoceI7" # Authentication token for Vault 
 }
 
 # Create a Vault KV version 1 mount for connection profiles.
@@ -142,45 +141,34 @@ module "create_connection_profile_postgresql" {
 }
 ```
 
-### Example for  **Local Node Secret:** Using `TF_VAR` Environment Variables
+## How to Use this terraform example.
 
-You can utilize environment variables to set Terraform variables. These environment variables should follow the format `TF_VAR_name`, and Terraform will prioritize their values when searching for variable assignments. For instance:
+Below are the setups to test this workflow. 
+
+1. Install `vault` on the workstation : 
+   1. Linux : `sudo apt update && sudo apt install gpg` 
+   2. MacOS : `brew tap hashicorp/tap` ; `brew install hashicorp/tap/vault`
+2. Starting the server
+   1. `vault server -dev`
+   2. You get an output as below.
+   3. Update the or set the value information in the environment variable as below
+      1. `export VAULT_ADDR='http://127.0.0.1:8200'`
+      2. `export VAULT_TOKEN=hvs.qfTp8ecvno8rvMfR98g1ggDi`
+   4. Or you can update the `provider` in the `main.tf` with the same information.
 
 ```bash
-export TF_VAR_region=us-west-1
-export TF_VAR_ami=ami-049d8641
-export TF_VAR_alist='[1,2,3]'
-export TF_VAR_amap='{ foo = "bar", baz = "qux" }'
+You may need to set the following environment variables:
+
+    $ export VAULT_ADDR='http://127.0.0.1:8200'
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: Ajnqw6ggWgNpsuhEcdJn1JWDO3SoWpjVm5BJ1qRzSQM=
+Root Token: hvs.qfTp8ecvno8rvMfR98g1ggDi
 ```
 
-Here is how we setup our secret in the environment variable.
-
-```bash
-export TF_VAR_secret='{ postgresql_profile = { password = "secret" }}'
-```
-
-Then we just exclude the `secret` variable as we have passed it from the environment variable.
-
-```hcl
-module "create_connection_profile_gcs" {
-  source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
-  display_name          = "ahmd-connec-gcs"        # Display name for the connection profile
-  location              = "us-east1"               # Location of the connection profile
-  connection_profile_id = "ahmd-connec-gcs"        # Unique identifier for the connection profile
-
-  labels = {
-    key = "value"
-  }
-
-  postgresql_profile = {
-    hostname = "127.0.0.1" # (Required) Hostname for the PostgreSQL connection.
-    port     = "1521"      # (Optional) Port for the PostgreSQL connection, default value is 5432.
-    database = "default"   # (Required) Username for the PostgreSQL connection.
-    username = "ahmed"     # (Required) Database for the PostgreSQL connection.
-  }
-}
-```
-
-- To understand how to use `TF_VAR_name` within a broader context, refer to the section on [Variable Configuration](https://developer.hashicorp.com/terraform/language/values/variables).
-- For additional details about `TF_VAR_name` and Terraform environment variables, you can also check the [Terraform CLI documentation](https://developer.hashicorp.com/terraform/cli/config/environment-variables#tf_cli_args-and-tf_cli_args_name).
+3. Running the test
+   1. `terraform init`
+   2. `terraform plan`
+   3. `terraform apply`
