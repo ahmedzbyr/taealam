@@ -192,8 +192,8 @@ variable "gcs_destination_config" {
   - `json_file_format` - JSON file format configuration.  
 
   *`json_file_format`*
-  `- `schema_file_format` - The schema file format along `JSON` data files. Possible values are: `NO_SCHEMA_FILE`, `AVRO_SCHEMA_FILE`.
-  `- `compression`        - Compression of the loaded `JSON` file. Possible values are: `NO_COMPRESSION`, `GZIP`.
+  - `schema_file_format` - The schema file format along `JSON` data files. Possible values are: `NO_SCHEMA_FILE`, `AVRO_SCHEMA_FILE`.
+  - `compression`        - Compression of the loaded `JSON` file. Possible values are: `NO_COMPRESSION`, `GZIP`.
 
   **JSON representation**
   ```
@@ -238,15 +238,15 @@ variable "bigquery_destination_config" {
   - `source_hierarchy_datasets` - Destination datasets are created so that hierarchy of the destination data objects matches the source hierarchy. Structure is documented below.
 
   **`single_target_dataset`**
-  `- `dataset_id` - (Required) Dataset ID in the format `projects/{project}/datasets/{dataset_id}` or `{project}:{dataset_id}`
+  - `dataset_id` - (Required) Dataset ID in the format `projects/{project}/datasets/{dataset_id}` or `{project}:{dataset_id}`
  
   **`source_hierarchy_datasets`**
-  `- `dataset_template` - (Required) Dataset template used for dynamic dataset creation.  
+  - `dataset_template` - (Required) Dataset template used for dynamic dataset creation.  
 
   **`dataset_template`**
-  `-- `location` - (Required) The geographic location where the dataset should reside. See [locations](https://cloud.google.com/bigquery/docs/locations) for supported locations.
-  `-- `dataset_id_prefix` - (Optional) If supplied, every created dataset will have its name prefixed by the provided value. The prefix and name will be separated by an underscore. i.e. `_`.
-  `-- `kms_key_name` - (Optional) Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table. The BigQuery Service Account associated with your project requires access to this encryption key. i.e. `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}`.
+  - `location` - (Required) The geographic location where the dataset should reside. See [locations](https://cloud.google.com/bigquery/docs/locations) for supported locations.
+  - `dataset_id_prefix` - (Optional) If supplied, every created dataset will have its name prefixed by the provided value. The prefix and name will be separated by an underscore. i.e. `_`.
+  - `kms_key_name` - (Optional) Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table. The BigQuery Service Account associated with your project requires access to this encryption key. i.e. `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}`.
 
   **JSON Representation**
 
