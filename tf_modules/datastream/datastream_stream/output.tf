@@ -13,11 +13,6 @@ output "this_stream_state" {
   value       = google_datastream_stream.main.state
 }
 
-output "this_stream_error" {
-  description = "The Stream error in case of failure."
-  value       = google_datastream_stream.main.error
-}
-
 output "this_stream_terraform_labels" {
   description = "The combination of labels configured directly on the resource and default labels configured on the provider."
   value       = google_datastream_stream.main.terraform_labels

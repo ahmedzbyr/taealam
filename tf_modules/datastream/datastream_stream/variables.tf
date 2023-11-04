@@ -103,8 +103,8 @@ variable "backfill_all" {
             ordinal_position = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
 
@@ -127,8 +127,8 @@ variable "backfill_all" {
             scale            = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
 
@@ -152,8 +152,8 @@ variable "backfill_all" {
             scale            = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
 
@@ -172,7 +172,7 @@ variable "backfill_all" {
 
 # destination_config - (Required) Destination connection profile configuration. Structure is documented below.
 # destination_connection_profile - (Required) Destination connection profile resource. Format: projects/{project}/locations/{location}/connectionProfiles/{name}
-variable "destination_connection_profile " {
+variable "destination_connection_profile" {
   description = "Destination connection profile resource. Format: `projects/{project}/locations/{location}/connectionProfiles/{name}`"
   type        = any
   validation {
@@ -273,24 +273,22 @@ variable "bigquery_destination_config" {
   type        = any
   default     = null
   validation {
-    condition = var.gcs_destination_config != null ? (length(setsubtract(keys(var.gcs_destination_config), [
-      "path",
-      "file_rotation_mb",
-      "file_rotation_interval",
-      "avro_file_format",
-      "json_file_format"
+    condition = var.bigquery_destination_config != null ? (length(setsubtract(keys(var.bigquery_destination_config), [
+      "data_freshness",
+      "single_target_dataset",
+      "source_hierarchy_datasets"
     ])) == 0) : true
-    error_message = "ERROR. Please check \"gcs_destination_config\". We accept \"path\", \"file_rotation_mb\", \"file_rotation_interval\", \"avro_file_format\", \"json_file_format\"."
+    error_message = "ERROR. Please check \"bigquery_destination_config\". We accept \"data_freshness\", \"single_target_dataset\", \"source_hierarchy_datasets\"."
   }
 }
 
 # source_config - (Required) Source connection profile configuration. Structure is documented below.
 # source_connection_profile - (Required) Destination connection profile resource. Format: projects/{project}/locations/{location}/connectionProfiles/{name}
-variable "source_connection_profile " {
+variable "source_connection_profile" {
   description = "Source connection profile resource. Format: `projects/{project}/locations/{location}/connectionProfiles/{name}`"
   type        = any
   validation {
-    condition     = length(regexall("connectionProfiles", var.private_connectivity)) != 0
+    condition     = length(regexall("connectionProfiles", var.source_connection_profile)) != 0
     error_message = "ERROR. Please check \"source_connection_profile\".\nFormat: \"projects/{project}/locations/{location}/connectionProfiles/{name}\"."
   }
 }
@@ -324,8 +322,8 @@ variable "mysql_source_config" {
             ordinal_position = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
   EOF
@@ -376,8 +374,8 @@ variable "oracle_source_config" {
             scale            = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
   EOF
@@ -429,8 +427,8 @@ variable "postgresql_source_config" {
             scale            = integer
           }]
         }]
-      }
-    }]
+      }]
+    }
   } 
   ```
   EOF
