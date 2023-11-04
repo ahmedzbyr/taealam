@@ -191,7 +191,7 @@ variable "gcs_destination_config" {
   - `avro_file_format` - AVRO file format configuration.
   - `json_file_format` - JSON file format configuration.  
 
-  *`json_file_format`*
+  **`json_file_format`**
   - `schema_file_format` - The schema file format along `JSON` data files. Possible values are: `NO_SCHEMA_FILE`, `AVRO_SCHEMA_FILE`.
   - `compression`        - Compression of the loaded `JSON` file. Possible values are: `NO_COMPRESSION`, `GZIP`.
 
