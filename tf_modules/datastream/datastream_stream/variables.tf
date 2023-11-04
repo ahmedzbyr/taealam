@@ -101,8 +101,6 @@ variable "backfill_all" {
             primary_key      = boolean
             nullable         = boolean
             ordinal_position = integer
-            precision        = integer
-            scale            = integer
           }]
         }]
       }
@@ -299,10 +297,154 @@ variable "source_connection_profile " {
 
 
 # mysql_source_config
-# oracle_source_config
-# postgresql_source_config
 variable "mysql_source_config" {
-  description = "value"
-  type        = any
-  default     = null
+  description = <<-EOF
+  MySQL data source configuration.
+  
+  - `include_objects` - MySQL objects to retrieve from the source. Structure is documented below.
+  - `exclude_objects` - MySQL objects to exclude from the stream. Structure is documented below.
+  - `max_concurrent_cdc_tasks` - Maximum number of concurrent CDC tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.
+  - `max_concurrent_backfill_tasks` - Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.   
+
+  **`include_objects` and `exclude_objects`**
+  ```
+  {
+    *clude_objects = {
+      mysql_databases = [{
+        database     = string
+        mysql_tables = [{
+          table         = string
+          mysql_columns = [{
+            column           = string
+            data_type        = string
+            length           = integer
+            collation        = string
+            primary_key      = boolean
+            nullable         = boolean
+            ordinal_position = integer
+          }]
+        }]
+      }
+    }]
+  } 
+  ```
+  EOF
+
+  type    = any
+  default = null
+  validation {
+    condition = var.mysql_source_config != null ? (length(setsubtract(keys(var.mysql_source_config), [
+      "include_objects",
+      "exclude_objects",
+      "max_concurrent_cdc_tasks",
+      "max_concurrent_backfill_tasks"
+    ])) == 0) : true
+    error_message = "ERROR. Please check \"mysql_source_config\". We accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\"."
+  }
+}
+
+
+# oracle_source_config
+variable "oracle_source_config" {
+  description = <<-EOF
+  Oracle data source configuration.
+  
+  - `include_objects` - Oracle objects to retrieve from the source. Structure is documented below.
+  - `exclude_objects` - Oracle objects to exclude from the stream. Structure is documented below.
+  - `max_concurrent_cdc_tasks` - Maximum number of concurrent CDC tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.
+  - `max_concurrent_backfill_tasks` - Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.   
+  - `drop_large_objects` - Configuration to drop large object values.
+  - `stream_large_objects` - Configuration to drop large object values.
+
+  **include_objects and exclude_objects**
+  ```
+  {
+    *clude_objects = {
+      oracle_schemas = [{
+        schemas     = string
+        oracle_tables = [{
+          table         = string
+          oracle_columns = [{
+            column           = string
+            data_type        = string
+            length           = integer
+            encoding         = string
+            primary_key      = boolean
+            nullable         = boolean
+            ordinal_position = integer
+            precision        = integer
+            scale            = integer
+          }]
+        }]
+      }
+    }]
+  } 
+  ```
+  EOF
+
+  type    = any
+  default = null
+  validation {
+    condition = var.oracle_source_config != null ? (length(setsubtract(keys(var.oracle_source_config), [
+      "include_objects",
+      "exclude_objects",
+      "max_concurrent_cdc_tasks",
+      "max_concurrent_backfill_tasks",
+      "drop_large_objects",
+      "stream_large_objects"
+    ])) == 0) : true
+    error_message = "ERROR. Please check \"oracle_source_config\". We accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\", \"drop_large_objects\", \"stream_large_objects\"."
+  }
+}
+
+
+
+# postgresql_source_config
+variable "postgresql_source_config" {
+  description = <<-EOF
+  Oracle data source configuration.
+  
+  - `include_objects` - Oracle objects to retrieve from the source. Structure is documented below.
+  - `exclude_objects` - Oracle objects to exclude from the stream. Structure is documented below.
+  - `replication_slot` - (Required) The name of the logical replication slot that's configured with the pgoutput plugin.
+  - `publication` - (Required) The name of the publication that includes the set of all tables that are defined in the stream's include_objects.
+  - `max_concurrent_backfill_tasks` - Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.   
+
+  **`include_objects` and `exclude_objects`**
+  ```
+  {
+    *clude_objects = {
+      postgresql_schemas = [{
+        schemas     = string
+        postgresql_tables = [{
+          table           = string
+          postgresql_columns = [{
+            column           = string
+            data_type        = string
+            length           = integer
+            primary_key      = boolean
+            nullable         = boolean
+            ordinal_position = integer
+            precision        = integer
+            scale            = integer
+          }]
+        }]
+      }
+    }]
+  } 
+  ```
+  EOF
+
+  type    = any
+  default = null
+  validation {
+    condition = var.postgresql_source_config != null ? (length(setsubtract(keys(var.postgresql_source_config), [
+      "include_objects",
+      "exclude_objects",
+      "replication_slot",
+      "max_concurrent_backfill_tasks",
+      "publication"
+    ])) == 0) : true
+    error_message = "ERROR. Please check \"postgresql_source_config\". We accept \"include_objects\", \"exclude_objects\", \"publication\", \"max_concurrent_backfill_tasks\", \"replication_slot\"."
+  }
 }
