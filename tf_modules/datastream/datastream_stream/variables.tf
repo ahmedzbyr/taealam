@@ -96,7 +96,6 @@ variable "backfill_all" {
           mysql_columns = [{
             column           = string
             data_type        = string
-            length           = integer
             collation        = string
             primary_key      = boolean
             nullable         = boolean
@@ -113,18 +112,15 @@ variable "backfill_all" {
   {
     postgresql_excluded_objects = {
       postgresql_schemas = [{
-        schemas     = string
+        schema     = string
         postgresql_tables = [{
           table           = string
           postgresql_columns = [{
             column           = string
             data_type        = string
-            length           = integer
             primary_key      = boolean
             nullable         = boolean
             ordinal_position = integer
-            precision        = integer
-            scale            = integer
           }]
         }]
       }]
@@ -137,19 +133,12 @@ variable "backfill_all" {
   {
     oracle_excluded_objects = {
       oracle_schemas = [{
-        schemas     = string
+        schema     = string
         oracle_tables = [{
           table         = string
           oracle_columns = [{
             column           = string
             data_type        = string
-            length           = integer
-            encoding         = string
-            primary_key      = boolean
-            nullable         = boolean
-            ordinal_position = integer
-            precision        = integer
-            scale            = integer
           }]
         }]
       }]
@@ -315,7 +304,6 @@ variable "mysql_source_config" {
           mysql_columns = [{
             column           = string
             data_type        = string
-            length           = integer
             collation        = string
             primary_key      = boolean
             nullable         = boolean
@@ -359,19 +347,12 @@ variable "oracle_source_config" {
   {
     *clude_objects = {
       oracle_schemas = [{
-        schemas     = string
+        schema     = string
         oracle_tables = [{
           table         = string
           oracle_columns = [{
             column           = string
             data_type        = string
-            length           = integer
-            encoding         = string
-            primary_key      = boolean
-            nullable         = boolean
-            ordinal_position = integer
-            precision        = integer
-            scale            = integer
           }]
         }]
       }]
@@ -413,18 +394,15 @@ variable "postgresql_source_config" {
   {
     *clude_objects = {
       postgresql_schemas = [{
-        schemas     = string
+        schema     = string
         postgresql_tables = [{
           table           = string
           postgresql_columns = [{
             column           = string
             data_type        = string
-            length           = integer
             primary_key      = boolean
             nullable         = boolean
             ordinal_position = integer
-            precision        = integer
-            scale            = integer
           }]
         }]
       }]
