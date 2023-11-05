@@ -41,14 +41,14 @@ module "create_ds_stream" {
     }
   }
 
-  # mysql_source_config = {
-  # }
+  mysql_source_config = {
+  }
 
   # postgresql_source_config = {
   #   replication_slot = 10
   #   publication      = 10
   # }
 
-  oracle_source_config = {}
+  //oracle_source_config = {}
 
 }
