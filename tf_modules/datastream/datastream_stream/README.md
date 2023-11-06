@@ -58,6 +58,9 @@ No modules.
 |------|------|
 | [google_datastream_stream.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/datastream_stream) | resource |
 | [null_resource.check_back_fill](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.check_if_only_one_source](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.check_not_all_destination_null](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.check_not_all_source_null](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 ---
 
