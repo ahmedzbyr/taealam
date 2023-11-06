@@ -51,13 +51,11 @@ module "create_ds_stream" {
   desired_state = "RUNNING"
 
   # Configuration for the source connection profile
-  # Replace {project}, {location}, and {name} with appropriate values
-  source_connection_profile = "projects/{project}/locations/{location}/connectionProfiles/{name}"
-  mysql_source_config       = {} # Placeholder for MySQL source-specific configuration
+  source_connection_profile = module.create_src_connection_profile_mysql.this_connection_profile_id # "projects/{project}/locations/{location}/connectionProfiles/{name}"
+  mysql_source_config       = {}                                                                    # Placeholder for MySQL source-specific configuration
 
   # Configuration for the destination connection profile
-  # Replace {project}, {location}, and {name} with appropriate values
-  destination_connection_profile = "projects/{project}/locations/{location}/connectionProfiles/{name}"
+  destination_connection_profile = module.create_dest_connection_profile_bq.this_connection_profile_id # "projects/{project}/locations/{location}/connectionProfiles/{name}"
   bigquery_destination_config = {
     # Configuration for BigQuery as the destination
     single_target_dataset = {
