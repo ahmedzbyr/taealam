@@ -13,7 +13,7 @@ resource "google_datastream_stream" "main" {
   # Configuration for no backfill, conditionally included if specified
   dynamic "backfill_none" {
     for_each = var.backfill_none && var.backfill_all == null ? [1] : [] # If backfill_none is true and backfill_all is not specified, include this block
-    content {}                                                          # Content is empty because we're indicating that no backfill should be done
+    content {}
   }
 
 

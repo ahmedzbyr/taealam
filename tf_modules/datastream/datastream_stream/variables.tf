@@ -30,7 +30,7 @@ variable "location" {
       "asia-south2", "asia-east2", "asia-southeast2", "asia-south1", "asia-northeast2", "asia-northeast3", "asia-southeast1", "asia-east1", "asia-northeast1",
       "australia-southeast2", "australia-southeast1"
     ], var.location)
-    error_message = "ERROR. Please check the \"location\". We accept below locations:\n\nUS Locations  - \"us-east1\", \"us-east5\", \"us-south1\", \"us-central1\", \"us-west4\", \"us-west2\", \"us-east4\", \"us-west1\", \"us-west3\",\nNorth America - \"northamerica-northeast1\", \"southamerica-east1\", \"southamerica-west1\", \"northamerica-northeast2\",\nEurope        - \"europe-west1\", \"europe-north1\", \"europe-west3\", \"europe-west2\", \"europe-southwest1\", \"europe-west8\", \"europe-west4\", \"europe-west9\", \"europe-west12\", \"europe-central2\", \"europe-west6\",\nAsia          - \"asia-south2\", \"asia-east2\", \"asia-southeast2\", \"asia-south1\", \"asia-northeast2\", \"asia-northeast3\", \"asia-southeast1\", \"asia-east1\", \"asia-northeast1\",\nAustralia     - \"australia-southeast2\", \"australia-southeast1\""
+    error_message = "ERROR. Please check the \"location\".\nWe accept below locations:\n\nUS Locations  - \"us-east1\", \"us-east5\", \"us-south1\", \"us-central1\", \"us-west4\", \"us-west2\", \"us-east4\", \"us-west1\", \"us-west3\",\nNorth America - \"northamerica-northeast1\", \"southamerica-east1\", \"southamerica-west1\", \"northamerica-northeast2\",\nEurope        - \"europe-west1\", \"europe-north1\", \"europe-west3\", \"europe-west2\", \"europe-southwest1\", \"europe-west8\", \"europe-west4\", \"europe-west9\", \"europe-west12\", \"europe-central2\", \"europe-west6\",\nAsia          - \"asia-south2\", \"asia-east2\", \"asia-southeast2\", \"asia-south1\", \"asia-northeast2\", \"asia-northeast3\", \"asia-southeast1\", \"asia-east1\", \"asia-northeast1\",\nAustralia     - \"australia-southeast2\", \"australia-southeast1\""
 
   }
 }
@@ -72,7 +72,7 @@ variable "desired_state" {
   default     = "RUNNING"
   validation {
     condition     = contains(["RUNNING", "PAUSED"], var.desired_state)
-    error_message = "ERROR. Please check \"desired_state\". We can only accept \"RUNNING\" to start the stream, and \"PAUSED\" to pause the stream."
+    error_message = "ERROR. Please check \"desired_state\".\nWe can only accept \"RUNNING\" to start the stream, and \"PAUSED\" to pause the stream."
   }
 }
 
@@ -155,7 +155,7 @@ variable "backfill_all" {
       "postgresql_excluded_objects",
       "oracle_excluded_objects"
     ])) == 0
-    error_message = "ERROR. Please check \"backfill_all\". We only accept \"mysql_excluded_objects\", \"postgresql_excluded_objects\", \"oracle_excluded_objects\"."
+    error_message = "ERROR. Please check \"backfill_all\".\nWe only accept \"mysql_excluded_objects\", \"postgresql_excluded_objects\", \"oracle_excluded_objects\"."
   }
 }
 
@@ -207,14 +207,21 @@ variable "gcs_destination_config" {
   type        = any
   default     = null
   validation {
-    condition = var.gcs_destination_config != null ? (length(setsubtract(keys(var.gcs_destination_config), [
+    condition = (var.gcs_destination_config != null ? (length(setsubtract(keys(var.gcs_destination_config), [
       "path",
       "file_rotation_mb",
       "file_rotation_interval",
       "avro_file_format",
       "json_file_format"
-    ])) == 0) : true
-    error_message = "ERROR. Please check \"gcs_destination_config\". We accept \"path\", \"file_rotation_mb\", \"file_rotation_interval\", \"avro_file_format\", \"json_file_format\"."
+      ])) == 0) : true && (
+      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "avro_file_format", null) != null : true
+      ) || (
+      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "json_file_format", null) != null : true
+      )) && !(
+      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "avro_file_format", null) != null : false &&
+      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "json_file_format", null) != null : false
+    )
+    error_message = "ERROR. Please check \"gcs_destination_config\".\nWe accept \"path\", \"file_rotation_mb\", \"file_rotation_interval\", \"avro_file_format\", \"json_file_format\".\nNOTE: Also ONE of \"avro_file_format\" or \"json_file_format\" is required (NOT both)."
   }
 }
 
@@ -262,12 +269,19 @@ variable "bigquery_destination_config" {
   type        = any
   default     = null
   validation {
-    condition = var.bigquery_destination_config != null ? (length(setsubtract(keys(var.bigquery_destination_config), [
+    condition = (var.bigquery_destination_config != null ? (length(setsubtract(keys(var.bigquery_destination_config), [
       "data_freshness",
       "single_target_dataset",
       "source_hierarchy_datasets"
-    ])) == 0) : true
-    error_message = "ERROR. Please check \"bigquery_destination_config\". We accept \"data_freshness\", \"single_target_dataset\", \"source_hierarchy_datasets\"."
+      ])) == 0) : true && (
+      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "single_target_dataset", null) != null : true
+      ) || (
+      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "source_hierarchy_datasets", null) != null : true
+      )) && !(
+      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "single_target_dataset", null) != null : false &&
+      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "source_hierarchy_datasets", null) != null : false
+    )
+    error_message = "ERROR. Please check \"bigquery_destination_config\".\nWe accept \"data_freshness\", \"single_target_dataset\", \"source_hierarchy_datasets\".\nNOTE: Also ONE of \"single_target_dataset\" or \"source_hierarchy_datasets\" is required (NOT both)."
   }
 }
 
@@ -325,7 +339,7 @@ variable "mysql_source_config" {
       "max_concurrent_cdc_tasks",
       "max_concurrent_backfill_tasks"
     ])) == 0) : true
-    error_message = "ERROR. Please check \"mysql_source_config\". We accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\"."
+    error_message = "ERROR. Please check \"mysql_source_config\".\nWe accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\"."
   }
 }
 
@@ -372,7 +386,7 @@ variable "oracle_source_config" {
       "drop_large_objects",
       "stream_large_objects"
     ])) == 0) : true
-    error_message = "ERROR. Please check \"oracle_source_config\". We accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\", \"drop_large_objects\", \"stream_large_objects\"."
+    error_message = "ERROR. Please check \"oracle_source_config\".\nWe accept \"include_objects\", \"exclude_objects\", \"max_concurrent_cdc_tasks\", \"max_concurrent_backfill_tasks\", \"drop_large_objects\", \"stream_large_objects\"."
   }
 }
 
@@ -414,13 +428,16 @@ variable "postgresql_source_config" {
   type    = any
   default = null
   validation {
-    condition = var.postgresql_source_config != null ? (length(setsubtract(keys(var.postgresql_source_config), [
+    condition = (var.postgresql_source_config != null ? (length(setsubtract(keys(var.postgresql_source_config), [
       "include_objects",
       "exclude_objects",
       "replication_slot",
       "max_concurrent_backfill_tasks",
-      "publication"
-    ])) == 0) : true
-    error_message = "ERROR. Please check \"postgresql_source_config\". We accept \"include_objects\", \"exclude_objects\", \"publication\", \"max_concurrent_backfill_tasks\", \"replication_slot\"."
+      "publication"])) == 0) : true) && (
+      var.postgresql_source_config != null ? lookup(var.postgresql_source_config, "replication_slot", null) != null : true
+      ) && (
+      var.postgresql_source_config != null ? lookup(var.postgresql_source_config, "publication", null) != null : true
+    )
+    error_message = "ERROR. Please check \"postgresql_source_config\".\nWe accept \"include_objects\", \"exclude_objects\", \"publication\", \"max_concurrent_backfill_tasks\", \"replication_slot\".\nNOTE: Also both \"publication\" and \"replication_slot\" are required."
   }
 }
