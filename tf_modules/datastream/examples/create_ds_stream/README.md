@@ -1,6 +1,6 @@
 # Creating a Datastream Stream: MySQL to BigQuery
 
-This guide walks through the process of setting up a Datastream stream, which facilitates the transfer of data from a MySQL database to a BigQuery dataset.
+This example is to go through the process of setting up a Datastream stream, which facilitates the transfer of data from a MySQL database to a BigQuery dataset.
 
 - [Creating a Datastream Stream: MySQL to BigQuery](#creating-a-datastream-stream-mysql-to-bigquery)
   - [Configuration Parameters](#configuration-parameters)
