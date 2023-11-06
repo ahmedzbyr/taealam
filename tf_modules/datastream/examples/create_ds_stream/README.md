@@ -5,18 +5,19 @@ This guide walks through the process of setting up a Datastream stream, which fa
 - [Creating a Datastream Stream: MySQL to BigQuery](#creating-a-datastream-stream-mysql-to-bigquery)
   - [Configuration Parameters](#configuration-parameters)
   - [Backfill Configuration - Handling Historical Data](#backfill-configuration---handling-historical-data)
+    - [`mysql_excluded_objects`](#mysql_excluded_objects)
+    - [`postgresql_excluded_objects`](#postgresql_excluded_objects)
+    - [`oracle_excluded_objects`](#oracle_excluded_objects)
   - [CMEK - Stream Encryption (Optional)](#cmek---stream-encryption-optional)
   - [ Stream Status](#stream-status)
   - [Source Configuration](#source-configuration)
     - [ MySQL data source configuration](#mysql-data-source-configuration)
-    - [ Oracle data source configuration.](#oracle-data-source-configuration)
+    - [ Oracle data source configuration](#oracle-data-source-configuration)
     - [PostgreSQL data source configuration](#postgresql-data-source-configuration)
   - [ Destination Configuration](#destination-configuration)
     - [GCS Bucket](#gcs-bucket)
     - [Bigquery Dataset](#bigquery-dataset)
   - [Example](#example)
-
-
 
 ## Configuration Parameters
 
@@ -77,6 +78,82 @@ If `backfill_none = true` then `backfill_all` should not be provided.
   }
 ```
 
+Backfill strategy to automatically backfill the Stream's objects. Specific objects can be excluded.
+
+- `mysql_excluded_objects` - MySQL data source objects to avoid backfilling.
+- `postgresql_excluded_objects` - PostgreSQL data source objects to avoid backfilling.
+- `oracle_excluded_objects` - PostgreSQL data source objects to avoid backfilling.
+
+### `mysql_excluded_objects`
+
+JSON Representation
+
+```hcl
+{
+  mysql_excluded_objects = {
+    mysql_databases = [{
+      database     = string
+      mysql_tables = [{
+        table         = string
+        mysql_columns = [{
+          column           = string
+          data_type        = string
+          collation        = string
+          primary_key      = boolean
+          nullable         = boolean
+          ordinal_position = integer
+        }]
+      }]
+    }]
+  }
+} 
+```
+
+### `postgresql_excluded_objects`
+
+JSON Representation
+
+```hcl
+{
+  postgresql_excluded_objects = {
+    postgresql_schemas = [{
+      schema     = string
+      postgresql_tables = [{
+        table           = string
+        postgresql_columns = [{
+          column           = string
+          data_type        = string
+          primary_key      = boolean
+          nullable         = boolean
+          ordinal_position = integer
+        }]
+      }]
+    }]
+  }
+} 
+```
+
+### `oracle_excluded_objects`
+
+JSON Representation
+
+```hcl
+{
+  oracle_excluded_objects = {
+    oracle_schemas = [{
+      schema     = string
+      oracle_tables = [{
+        table         = string
+        oracle_columns = [{
+          column           = string
+          data_type        = string
+        }]
+      }]
+    }]
+  }
+} 
+```
+
 ## CMEK - Stream Encryption (Optional)
 
 - (Optional) A reference to a KMS encryption key.
@@ -121,7 +198,6 @@ We have give 3 types of source configurations
 - `max_concurrent_cdc_tasks` - Sets the max number of concurrent CDC tasks.
 - `max_concurrent_backfill_tasks` - Sets the max number of concurrent backfill tasks.
 
-
 **`include_objects` and `exclude_objects`**
 
 ```hcl
@@ -145,7 +221,7 @@ We have give 3 types of source configurations
   } 
 ```
 
-###  Oracle data source configuration.
+###  Oracle data source configuration
 
 :books: **NOTE:** Configure Oracle sources similarly, including optional settings for excluding objects and setting task limits.
 
@@ -313,7 +389,7 @@ Define how data should be structured in BigQuery, including dataset template and
 }
 ```
 
-## Example 
+## Example
 
 ```hcl
 module "create_ds_stream" {
@@ -366,7 +442,7 @@ module "create_ds_stream" {
     # Configuration for BigQuery as the destination
     single_target_dataset = {
       # ID of the BigQuery dataset to which the Datastream will write data
-      dataset_id = "some:some"
+      dataset_id = "project-id:dataset-id"
     }
   }
 }
