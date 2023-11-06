@@ -1,25 +1,44 @@
 module "create_ds_stream" {
-  source       = "../../datastream_stream"
-  project      = "elevated-column-400011"
+  # Define the source module path
+  source = "../../datastream_stream"
+
+  # Specify the GCP project ID
+  project = "elevated-column-400011"
+
+  # Set a human-readable name for the Datastream stream
   display_name = "ahmed-ds-stream"
-  stream_id    = "ahmed-ds-stream"
-  location     = "us-east1"
+
+  # Unique identifier for the Datastream stream
+  stream_id = "ahmed-ds-stream"
+
+  # The location where the Datastream resource will be created
+  location = "us-east1"
+
+  # Labels are key/value pairs for tagging and organizing GCP resources
   labels = {
     key = "some_value"
   }
-  backfill_none = false
+
+  # Backfill configuration to determine how historical data is handled
+  backfill_none = false # If false, historical data is not excluded from the stream
   backfill_all = {
+    # Specify any databases and tables to exclude from backfilling
     mysql_excluded_objects = {
       mysql_databases = [
         {
+          # Name of the database to exclude from backfill
           database = "ahmed"
           mysql_tables = [
             {
-              table         = "atable"
+              # Specific tables within the 'ahmed' database to exclude
+              table = "atable"
+              # Specify columns within 'atable' to exclude from backfill
               mysql_columns = [{ column = "amycol" }]
             },
             {
-              table         = "btable"
+              # Another table within the 'ahmed' database to exclude
+              table = "btable"
+              # Specify columns within 'btable' to exclude from backfill
               mysql_columns = [{ column = "bmycol" }]
             }
           ]
@@ -27,34 +46,23 @@ module "create_ds_stream" {
       ]
     }
   }
-  source_connection_profile      = "projects/{project}/locations/{location}/connectionProfiles/{name}"
+
+  # Desired state of the Datastream stream, e.g., "RUNNING" or "PAUSED"
+  desired_state = "RUNNING"
+
+  # Configuration for the source connection profile
+  # Replace {project}, {location}, and {name} with appropriate values
+  source_connection_profile = "projects/{project}/locations/{location}/connectionProfiles/{name}"
+  mysql_source_config       = {} # Placeholder for MySQL source-specific configuration
+
+  # Configuration for the destination connection profile
+  # Replace {project}, {location}, and {name} with appropriate values
   destination_connection_profile = "projects/{project}/locations/{location}/connectionProfiles/{name}"
-
-  # gcs_destination_config = {
-  #   # path             = ""
-  #   avro_file_format = {}
-  #   json_file_format = {}
-  # }
-
   bigquery_destination_config = {
+    # Configuration for BigQuery as the destination
     single_target_dataset = {
-      dataset_id = "some:some"
+      # ID of the BigQuery dataset to which the Datastream will write data
+      dataset_id = "project-id:dataset-id"
     }
-    # source_hierarchy_datasets = {
-    #   dataset_template = {
-    #     location = "us-east1"
-    #   }
-    # }
   }
-
-  # mysql_source_config = {
-  # }
-
-  postgresql_source_config = {
-    replication_slot = 10
-    publication      = 10
-  }
-
-  # oracle_source_config = {}
-
 }

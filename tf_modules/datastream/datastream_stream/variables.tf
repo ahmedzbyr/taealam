@@ -395,10 +395,10 @@ variable "oracle_source_config" {
 # postgresql_source_config
 variable "postgresql_source_config" {
   description = <<-EOF
-  Oracle data source configuration.
+  PostgreSQL data source configuration.
   
-  - `include_objects` - Oracle objects to retrieve from the source. Structure is documented below.
-  - `exclude_objects` - Oracle objects to exclude from the stream. Structure is documented below.
+  - `include_objects` - PostgreSQL objects to retrieve from the source. Structure is documented below.
+  - `exclude_objects` - PostgreSQL objects to exclude from the stream. Structure is documented below.
   - `replication_slot` - (Required) The name of the logical replication slot that's configured with the pgoutput plugin.
   - `publication` - (Required) The name of the publication that includes the set of all tables that are defined in the stream's include_objects.
   - `max_concurrent_backfill_tasks` - Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.   
