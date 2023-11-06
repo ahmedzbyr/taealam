@@ -218,8 +218,8 @@ variable "gcs_destination_config" {
       ) || (
       var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "json_file_format", null) != null : true
       )) && !(
-      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "avro_file_format", null) != null : false &&
-      var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "json_file_format", null) != null : false
+      (var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "avro_file_format", null) != null : false) &&
+      (var.gcs_destination_config != null ? lookup(var.gcs_destination_config, "json_file_format", null) != null : false)
     )
     error_message = "ERROR. Please check \"gcs_destination_config\".\nWe accept \"path\", \"file_rotation_mb\", \"file_rotation_interval\", \"avro_file_format\", \"json_file_format\".\nNOTE: Also ONE of \"avro_file_format\" or \"json_file_format\" is required (NOT both)."
   }
@@ -278,8 +278,8 @@ variable "bigquery_destination_config" {
       ) || (
       var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "source_hierarchy_datasets", null) != null : true
       )) && !(
-      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "single_target_dataset", null) != null : false &&
-      var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "source_hierarchy_datasets", null) != null : false
+      (var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "single_target_dataset", null) != null : false) &&
+      (var.bigquery_destination_config != null ? lookup(var.bigquery_destination_config, "source_hierarchy_datasets", null) != null : false)
     )
     error_message = "ERROR. Please check \"bigquery_destination_config\".\nWe accept \"data_freshness\", \"single_target_dataset\", \"source_hierarchy_datasets\".\nNOTE: Also ONE of \"single_target_dataset\" or \"source_hierarchy_datasets\" is required (NOT both)."
   }

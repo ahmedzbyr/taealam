@@ -6,8 +6,11 @@ locals {
   # Check if all source configurations are provided, which is likely an error as typically only one should be specified
   check_not_all_source_null = var.postgresql_source_config != null && var.oracle_source_config != null && var.mysql_source_config != null
 
+  # Check if all destination configurations are NOT provided, which is likely an error as only one destination should be specified
+  check_not_all_destination_null = var.gcs_destination_config == null && var.bigquery_destination_config == null
+
   # Check if all destination configurations are provided, which is likely an error as only one destination should be specified
-  check_not_all_destination_null = var.gcs_destination_config != null && var.bigquery_destination_config != null
+  check_all_destination_not_null = var.gcs_destination_config != null && var.bigquery_destination_config != null
 
   # Check if only PostgreSQL source is provided and others are null, which is a valid scenario
   check_if_only_postgres_source = var.postgresql_source_config != null && var.oracle_source_config == null && var.mysql_source_config == null
@@ -36,6 +39,11 @@ resource "null_resource" "check_not_all_source_null" {
 resource "null_resource" "check_not_all_destination_null" {
   # If the check_not_all_destination_null condition is true, raise an error indicating that no destination was provided when one is required
   count = local.check_not_all_destination_null ? "ERROR. Please have one destination, but NO destination was provided." : 0
+}
+
+resource "null_resource" "check_all_destination_not_null" {
+  # If the check_all_destination_not_null condition is true, raise an error indicating that more than one destination was provided when one is required
+  count = local.check_all_destination_not_null ? "ERROR. Please have one destination, but More then one destination was provided." : 0
 }
 
 resource "null_resource" "check_if_only_one_source" {

@@ -30,22 +30,22 @@ module "create_ds_stream" {
   source_connection_profile      = "projects/{project}/locations/{location}/connectionProfiles/{name}"
   destination_connection_profile = "projects/{project}/locations/{location}/connectionProfiles/{name}"
 
-  gcs_destination_config = {
-    # path             = ""
-    #avro_file_format = {}
-    json_file_format = {}
-  }
-
-  # bigquery_destination_config = {
-  #   single_target_dataset = {
-  #     dataset_id = "some:some"
-  #   }
-  #   source_hierarchy_datasets = {
-  #     dataset_template = {
-  #       location = "us-east1"
-  #     }
-  #   }
+  # gcs_destination_config = {
+  #   # path             = ""
+  #   avro_file_format = {}
+  #   json_file_format = {}
   # }
+
+  bigquery_destination_config = {
+    single_target_dataset = {
+      dataset_id = "some:some"
+    }
+    # source_hierarchy_datasets = {
+    #   dataset_template = {
+    #     location = "us-east1"
+    #   }
+    # }
+  }
 
   # mysql_source_config = {
   # }
