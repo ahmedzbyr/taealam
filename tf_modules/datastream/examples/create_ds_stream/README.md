@@ -176,7 +176,7 @@ customer_managed_encryption_key = "key" # Optional
 
 ## Source Configuration
 
-We have give 3 types of source configurations
+Configure the source from which Datastream will read data. We first create a `source_connection_profile` using the `connection_profile` module which can used here. We then can have give 3 types of source configurations
 
 - MySQL
 - PostgreSQL
@@ -285,7 +285,8 @@ We have give 3 types of source configurations
 
 ##  Destination Configuration
 
-There are 2 types of destionation we can wrtie the data to:
+We first create a `destination_connection_profile` using the `connection_profile` module which can used here.
+Then there are 2 types of destionation we can wrtie the data to:
 
 - GCS Bucket
 - BigQuery Dataset.
