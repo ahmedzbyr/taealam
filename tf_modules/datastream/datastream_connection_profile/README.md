@@ -240,6 +240,9 @@ These connection profiles play a crucial role in enabling Datastream to efficien
 
 
 - [Configuration for Each Profile Type](#configuration-for-each-profile-type)
+  - [ Example - Create a connection profile for MySQL database](#example---create-a-connection-profile-for-mysql-database)
+    - [ Configure a Cloud SQL for MySQL database:](#configure-a-cloud-sql-for-mysql-database)
+    - [JSON representation](#json-representation)
   - [ Example - Create a connection profile for Oracle database](#example---create-a-connection-profile-for-oracle-database)
     - [Configure a Self-Hosted Oracle Database:](#configure-a-self-hosted-oracle-database)
       - [Step 1: Verify Database Mode](#step-1-verify-database-mode)
@@ -247,11 +250,8 @@ These connection profiles play a crucial role in enabling Datastream to efficien
       - [Step 3: Configure Log File Rotation](#step-3-configure-log-file-rotation)
       - [Step 4: Enable Supplemental Log Data](#step-4-enable-supplemental-log-data)
       - [Step 5: Grant Privileges to User Account](#step-5-grant-privileges-to-user-account)
-    - [JSON representation](#json-representation)
-    - [ Connectivity Methods](#connectivity-methods)
-  - [ Example - Create a connection profile for MySQL database](#example---create-a-connection-profile-for-mysql-database)
-    - [ Configure a Cloud SQL for MySQL database:](#configure-a-cloud-sql-for-mysql-database)
     - [JSON representation](#json-representation-1)
+    - [ Connectivity Methods](#connectivity-methods)
   - [Example - Create a connection profile for Cloud PostgreSQL database](#example---create-a-connection-profile-for-cloud-postgresql-database)
     - [ Configure a Cloud SQL for PostgreSQL database:](#configure-a-cloud-sql-for-postgresql-database)
       - [Enable Logical Replication](#enable-logical-replication)
@@ -259,6 +259,62 @@ These connection profiles play a crucial role in enabling Datastream to efficien
     - [Create a Datastream User](#create-a-datastream-user)
     - [JSON representation](#json-representation-2)
 
+
+##  Example - Create a connection profile for MySQL database
+
+###  Configure a Cloud SQL for MySQL database:
+
+- **Enable binary logging:**
+  - To enable binary logging for Cloud SQL for MySQL, follow the instructions in [Enabling point-in-time recovery](https://cloud.google.com/sql/docs/mysql/backup-recovery/pitr).
+
+- **Create a Datastream user:**
+  - To create a Datastream user for Cloud SQL, execute the following MySQL commands:
+
+```sql
+CREATE USER 'datastream'@'%' IDENTIFIED BY '[YOUR_PASSWORD]';
+GRANT REPLICATION SLAVE, SELECT, REPLICATION CLIENT ON *.* TO 'datastream'@'%';
+FLUSH PRIVILEGES;
+```
+
+| Field          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Location       | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
+| Hostname or IP | Enter a hostname or IP address that Datastream can use to connect to the source MySQL database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting or Forward-SSH, provide the public IP address. |
+| Port           | Enter the port number that's reserved for the source database (The default port is typically 3306.).                                                                                                                                                                                                                                                                                                                                                         |
+| Username       | Enter the username of the account for the source database (for example, root). This is the Datastream user that you created for the database. For more information about creating this user, see Configure a source MySQL database.                                                                                                                                                                                                                          |
+| Password       | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                   |
+
+### JSON representation
+
+```json
+{
+  "project": string,
+  "display_name": string,
+  "connection_profile_id": string,
+  "location": string,
+  "labels": {
+    string: string,
+    ...
+  },
+  "display_name": string,
+  "mysql_profile":   {
+    "hostname": string,
+    "port": integer,
+    "username": string,
+    "password": string,
+    "ssl_config": {
+      {
+      "client_key": string,
+      "client_key_set": boolean,
+      "client_certificate": string,
+      "client_certificate_set": boolean,
+      "ca_certificate": string,
+      "ca_certificate_set": boolean
+      }
+    }
+  }
+}
+```
 
 ##  Example - Create a connection profile for Oracle database
 
@@ -413,64 +469,6 @@ This guide outlines the steps to configure a self-hosted Oracle database for Cha
    - Establish secure connectivity between Datastream and the source database, either internally within Google Cloud or with external sources connected over VPN or Interconnect.
    - Select a private connectivity configuration from the list if you've created one, containing information for Datastream to communicate with the source database over a private network.
    - If you haven't created a private connectivity configuration, you can create one by clicking "CREATE PRIVATE CONNECTIVITY CONFIGURATION" at the bottom of the drop-down list and following the steps to create it.
-
-##  Example - Create a connection profile for MySQL database
-
-Certainly, here are the points summarizing the provided information:
-
-###  Configure a Cloud SQL for MySQL database:
-
-- **Enable binary logging:**
-  - To enable binary logging for Cloud SQL for MySQL, follow the instructions in [Enabling point-in-time recovery](https://cloud.google.com/sql/docs/mysql/backup-recovery/pitr).
-
-- **Create a Datastream user:**
-  - To create a Datastream user for Cloud SQL, execute the following MySQL commands:
-
-```sql
-CREATE USER 'datastream'@'%' IDENTIFIED BY '[YOUR_PASSWORD]';
-GRANT REPLICATION SLAVE, SELECT, REPLICATION CLIENT ON *.* TO 'datastream'@'%';
-FLUSH PRIVILEGES;
-```
-
-| Field          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Location       | Select the region where the connection profile is stored. Connection profiles, like all resources, are saved in a region, and a stream can only use connection profiles that are stored in the same region as the stream. Region selection doesn't impact whether Datastream can connect to the source or the destination, but can impact availability if the region experiences downtime.                                                                   |
-| Hostname or IP | Enter a hostname or IP address that Datastream can use to connect to the source MySQL database. If you're using private connectivity to communicate with the source database, then specify the private (internal) IP address for the source database. If you're using a reverse proxy for private connectivity, then use the IP address of the proxy. For other connectivity methods, such as IP allowlisting or Forward-SSH, provide the public IP address. |
-| Port           | Enter the port number that's reserved for the source database (The default port is typically 3306.).                                                                                                                                                                                                                                                                                                                                                         |
-| Username       | Enter the username of the account for the source database (for example, root). This is the Datastream user that you created for the database. For more information about creating this user, see Configure a source MySQL database.                                                                                                                                                                                                                          |
-| Password       | Enter the password of the account for the source database.                                                                                                                                                                                                                                                                                                                                                                                                   |
-
-### JSON representation
-
-```json
-{
-  "project": string,
-  "display_name": string,
-  "connection_profile_id": string,
-  "location": string,
-  "labels": {
-    string: string,
-    ...
-  },
-  "display_name": string,
-  "mysql_profile":   {
-    "hostname": string,
-    "port": integer,
-    "username": string,
-    "password": string,
-    "ssl_config": {
-      {
-      "client_key": string,
-      "client_key_set": boolean,
-      "client_certificate": string,
-      "client_certificate_set": boolean,
-      "ca_certificate": string,
-      "ca_certificate_set": boolean
-      }
-    }
-  }
-}
-```
 
 ## Example - Create a connection profile for Cloud PostgreSQL database
 
