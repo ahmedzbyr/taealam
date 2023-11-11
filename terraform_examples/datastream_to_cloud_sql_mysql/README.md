@@ -359,7 +359,7 @@ module "datastream_mysql_to_bq_dataset" {
 
 ## Loading Data on MySQL
 
-We can now load some data into the database at the source using a simple python code as below. 
+We can now load some data into the database at the source using a simple python code as below. To populate the source database with data, we can use the following straightforward Python script to make is easy for us. This script connects to the MySQL database, creates a new table (if it doesn't already exist), and inserts multiple records into it.
 
 
 ```python
@@ -399,6 +399,14 @@ mydb.commit()
 print(mycursor.rowcount, "records inserted.")  # Print the number of records inserted
 ```
 
-Once this script is executed, the data should be replicated on the destination in bigQuery. **NOTE:** Since we are using `single_target_dataset` tables in the dataset will be create in the `databaseName_tableName` format. 
+After running this script, the inserted data will be replicated in the BigQuery destination. 
+
+**Note:** When using the `single_target_dataset` configuration, tables within the dataset will follow the `databaseName_tableName` naming convention.
 
 ![Customer Data in Destination Dataset](./images/datamigrated_from_src_to_dest.png)
+
+This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, with a few minor adjustments - the core process remains consistent.
+
+It's important to note that in this setup, we've utilized the default network, which simplified our configuration as it required fewer firewall rules, only necessitating the specification of authorized networks for CloudSQL. However, this scenario might not align with typical organizational setups. In a more standard enterprise environment, CloudSQL is often isolated within a shared VPC and accessed exclusively through a cloud authentication proxy node.
+
+In future blog posts, we plan to delve into creating a VPC and setting up an environment that more closely mirrors a typical corporate network infrastructure. For the time being, consider this post as an introductory guide to get started with Datastream.
