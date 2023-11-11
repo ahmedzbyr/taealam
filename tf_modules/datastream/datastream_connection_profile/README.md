@@ -117,7 +117,7 @@ output "secret_information" {
 # Create a connection profile for PostgreSQL using a module.
 module "create_connection_profile_postgresql" {
   source                = "../../datastream_connection_profile" # Path to the connection profile module
-  project               = "elevated-column-400011"              # Project where the connection profile will be created
+  project               = "my-project-id"              # Project where the connection profile will be created
   display_name          = "ahmd-connec-postgresql"              # Display name for the connection profile
   location              = "us-east1"                            # Location of the connection profile
   connection_profile_id = "ahmd-connec-postgresql"              # Unique identifier for the connection profile
@@ -162,7 +162,7 @@ Then we just exclude the `secret` variable as we have passed it from the environ
 ```hcl
 module "create_connection_profile_gcs" {
   source                = "../../datastream_connection_profile"
-  project               = "elevated-column-400011" # Project where the connection profile will be created
+  project               = "my-project-id" # Project where the connection profile will be created
   display_name          = "ahmd-connec-gcs"        # Display name for the connection profile
   location              = "us-east1"               # Location of the connection profile
   connection_profile_id = "ahmd-connec-gcs"        # Unique identifier for the connection profile

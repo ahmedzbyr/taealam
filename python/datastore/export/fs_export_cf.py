@@ -26,7 +26,7 @@ client = firestore_admin_v1.FirestoreAdminClient()
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
 json_data = {
-    "project_id": "elevated-column-400011",
+    "project_id": "my-project-id",
     "db_id": "db_id",
     "export_bucket": "gs://fs-export-bucket/",
     "collection_ids": ["abc", "xyz", "axz"],

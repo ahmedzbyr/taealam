@@ -91,7 +91,7 @@ This script fully prepares the GCE instance for Ansible automation.
 ```hcl
 # Project
 variable "project_id" {
-  default = "elevated-column-400011"
+  default = "my-project-id"
 }
 
 data "google_project" "project" {
@@ -262,7 +262,7 @@ Terraform will perform the following actions:
       + metadata_fingerprint = (known after apply)
       + min_cpu_platform     = (known after apply)
       + name                 = "ahmed-instance-1"
-      + project              = "elevated-column-400011"
+      + project              = "my-project-id"
       + self_link            = (known after apply)
       + tags_fingerprint     = (known after apply)
       + zone                 = "us-west1-b"

@@ -26,7 +26,7 @@ client = datastore_admin_v1.DatastoreAdminClient()
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
 # json_data = {
-#     "project_id": "elevated-column-400011",
+#     "project_id": "my-project-id",
 #     "export_bucket": "gs://ds-export-bucket/",
 #     "kinds": ["abc", "xyz", "axz"],
 #     "namespace_ids": ["my_nm"]

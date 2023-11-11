@@ -9,3 +9,4 @@ blog_posts_draft/
 .vscode
 __pycache__
 draft 
+.DS_Store

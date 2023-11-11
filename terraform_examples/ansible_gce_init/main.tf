@@ -1,6 +1,6 @@
 # Project
 variable "project_id" {
-  default = "elevated-column-400011"
+  default = "my-project-id"
 }
 
 data "google_project" "project" {

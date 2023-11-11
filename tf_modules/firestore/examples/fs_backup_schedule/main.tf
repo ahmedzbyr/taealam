@@ -6,7 +6,7 @@ module "backup_schedule" {
   source = "../../firestore_backup_schedule"
 
   # ID of the project in which the Firestore instance resides.
-  project = "elevated-column-400011"
+  project = "my-project-id"
 
   # Backup frequency. Can be "DAILY" or "WEEKLY".
   frequency = "DAILY"

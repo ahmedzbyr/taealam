@@ -12,7 +12,7 @@ packer {
 # Family: ubuntu-2004-lts
 
 source "googlecompute" "create-new-custom-image" {
-  project_id = "elevated-column-400011" # The project ID that will be used to launch instances and store images. 
+  project_id = "my-project-id" # The project ID that will be used to launch instances and store images. 
   region     = "us-east1"               # The region in which to launch the instance. Defaults to the region hosting the specified zone.
   zone       = "us-east1-b"             # The zone in which to launch the instance used to create the image. Example: "us-central1-a"
 

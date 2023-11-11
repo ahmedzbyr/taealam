@@ -25,7 +25,7 @@ Below are few of the variables which are required.
 
 ```hcl
   # Specify the GCP project ID
-  project = "elevated-column-400011"
+  project = "my-project-id"
 
   # Set a human-readable name for the Datastream stream
   display_name = "ahmed-ds-stream"
@@ -398,7 +398,7 @@ module "create_ds_stream" {
   source = "../../datastream_stream"
 
   # Specify the GCP project ID
-  project = "elevated-column-400011"
+  project = "my-project-id"
 
   # Set a human-readable name for the Datastream stream
   display_name = "ahmed-ds-stream"

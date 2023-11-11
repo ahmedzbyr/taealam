@@ -64,7 +64,7 @@ The script Export/Import service facilitates copying a subset or all entities to
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
 json_data = {
-    "project_id": "elevated-column-400011",
+    "project_id": "my-project-id",
     "export_bucket": "gs://ds-export-bucket/",
     "kinds": ["abc", "xyz", "axz"],
     "namespace_ids": ["my_nm"]
@@ -200,7 +200,7 @@ Here, we import the necessary libraries including `firestore_admin_v1` from `goo
 # Define a JSON payload expected from Cloud Scheduler or Cloud Function
 #
 json_data = {
-    "project_id": "elevated-column-400011",
+    "project_id": "my-project-id",
     "db_id": "db_id",
     "export_bucket": "gs://fs-export-bucket/",
     "collection_ids": ["abc", "xyz", "axz"],
