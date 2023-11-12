@@ -1,6 +1,6 @@
 # Establishing a Datastream from Cloud SQL (MySQL) to BigQuery
 
-This guide provides detailed instructions on setting up a datastream connection from Cloud SQL (MySQL) to BigQuery. We aim to simplify the process by using default settings and configurations wherever possible. The focus of this guide is on using the default global network for a specific region, with more complex custom configurations to be addressed in a future guide.
+This guide provides detailed instructions on setting up a datastream connection from Cloud SQL (MySQL) to BigQuery. We aim to simplify the process by using default settings and configurations wherever possible. The focus of this guide is on using the default settings for a specific region, with more complex custom configurations to be addressed in a future guide.
 
 Here is an overview of what we are doing in the workflow. Complete terraform is on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/datastream_to_cloud_sql_mysql)
 
@@ -407,6 +407,6 @@ After running this script, the inserted data will be replicated in the BigQuery 
 
 This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, with a few minor adjustments - the core process remains consistent.
 
-It's important to note that in this setup, we've utilized the default network, which simplified our configuration as it required fewer firewall rules, only necessitating the specification of authorized networks for CloudSQL. However, this scenario might not align with typical organizational setups. In a more standard enterprise environment, CloudSQL is often isolated within a shared VPC and accessed exclusively through a cloud authentication proxy node.
+It's important to note that in this setup, we've utilized the default settings, which simplified our configuration as it required fewer firewall rules, only necessitating the specification of authorized networks for CloudSQL. However, this scenario might not align with typical organizational setups. In a more standard enterprise environment, CloudSQL is often isolated within a shared VPC and accessed exclusively through a cloud authentication proxy node.
 
 In future blog posts, we plan to delve into creating a VPC and setting up an environment that more closely mirrors a typical corporate network infrastructure. For the time being, consider this post as an introductory guide to get started with Datastream.
