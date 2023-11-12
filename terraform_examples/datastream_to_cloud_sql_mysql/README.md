@@ -155,12 +155,12 @@ resource "google_sql_database_instance" "main" {
 
 NOTE: We need to make sure the `binary_log_enabled` is enabled for MySQL Instance
 
-![Enabled Binary Logs](./images/enable_binlogs.png)
+![Enabled Binary Logs](https://ahmedzbyr.gitlab.io/images/datastream_enable_binlogs.png)
 
 
 Establish a `datastream` user and database, allowing connection from any IP in the datastream:
 
-![`datastream` user](./images/ds_user_created.png)
+![`datastream` user](https://ahmedzbyr.gitlab.io/images/datastream_ds_user_created.png)
 
 ```hcl
 
@@ -182,7 +182,7 @@ resource "google_sql_database" "datastream_src_database" {
 }
 ```
 
-![Database Created](./images/database_created.png)
+![Database Created](https://ahmedzbyr.gitlab.io/images/datastream_database_created.png)
 
 
 Alternatively, you could set up the user and permissions using SQL commands, but using Terraform is recommended:
@@ -219,7 +219,7 @@ resource "google_bigquery_dataset" "dataset" {
 }
 ```
 
-![Dataset for Destination](./images/bq_dataset_created.png)
+![Dataset for Destination](https://ahmedzbyr.gitlab.io/images/datastream_bq_dataset_created.png)
 
 ## Step 3: Creating a Datastream Connection Profile to `MySQL` server
 
@@ -267,7 +267,7 @@ module "connection_profile_id" {
 }
 ```
 
-![MySQL Connection Profile](./images/conn_src_mysql.png)
+![MySQL Connection Profile](https://ahmedzbyr.gitlab.io/images/datastream_conn_src_mysql.png)
 
 With these steps completed, at this point we have the Source database is ready, connection profile to it from datastream is ready.
 
@@ -295,7 +295,7 @@ module "create_connection_profile_bq" {
 }
 ```
 
-![BQ Connection Profile](./images/conn_dest_bq.png)
+![BQ Connection Profile](https://ahmedzbyr.gitlab.io/images/datastream_conn_dest_bq.png)
 
 
 **NOTE:** There are no configuration on the bigquery side, its just a `{}` to enable the bigquery connection. 
@@ -355,7 +355,7 @@ module "datastream_mysql_to_bq_dataset" {
 }
 ```
 
-![Datastream](./images/datastream_created.png)
+![Datastream](https://ahmedzbyr.gitlab.io/images/datastream_created.png)
 
 ## Loading Data on MySQL
 
@@ -403,7 +403,7 @@ After running this script, the inserted data will be replicated in the BigQuery 
 
 **Note:** When using the `single_target_dataset` configuration, tables within the dataset will follow the `databaseName_tableName` naming convention.
 
-![Customer Data in Destination Dataset](./images/datamigrated_from_src_to_dest.png)
+![Customer Data in Destination Dataset](https://ahmedzbyr.gitlab.io/images/datastream_datamigrated_from_src_to_dest.png)
 
 This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, with a few minor adjustments - the core process remains consistent.
 
