@@ -64,7 +64,7 @@ Changes to Outputs:
     ]
 ```
 
-With these IPs, you can authorize connections to Datastream. Next, create a CloudSQL instance in the default (global) network, which facilitates setting up the Datastream connection.
+With these IPs, you can authorize connections to Datastream. Next, create a CloudSQL instance in the default (global) network with public IP address, which facilitates setting up the Datastream connection.
 
 ### Setting up a CloudSQL MySQL Server Using Terraform
 
@@ -127,7 +127,7 @@ output "password" {
 
 ```
 
-Create the CloudSQL server, setting `authorized_networks` based on the `google_datastream_static_ips` output:
+Create the CloudSQL server, setting `authorized_networks` based on the `google_datastream_static_ips` output: Please check `ip_configuration` in the below terraform. 
 
 ```hcl
 # Resource to create a Cloud SQL database instance
@@ -164,7 +164,7 @@ resource "google_sql_database_instance" "main" {
 }
 ```
 
-NOTE: We need to make sure the `binary_log_enabled` is enabled for MySQL Instance
+NOTE: We need to make sure the `binary_log_enabled` is enabled for MySQL Instance, check `backup_configuration` in the above terraform.
 
 ![Enabled Binary Logs](https://ahmedzbyr.gitlab.io/images/datastream_enable_binlogs.png)
 
@@ -206,7 +206,7 @@ FLUSH PRIVILEGES;
 
 ## Step 2: Creating a Destination `BigQuery` dataset
 
-We will also need a destination to retrived the data to, this will be a dataset.
+We will also need a destination to retrived the data to, this will be a dataset. As we will be using `single_target_dataset` on the datastrean, more about this can be found on the [datastream modules](https://github.com/ahmedzbyr/taealam/tree/master/tf_modules/datastream/datastream_stream) documentation.
 
 ```hcl
 # Resource definition for creating a Google BigQuery dataset
@@ -275,7 +275,7 @@ module "connection_profile_id" {
   }
 
   depends_on = [time_sleep.main]
-}
+} 
 ```
 
 ![MySQL Connection Profile](https://ahmedzbyr.gitlab.io/images/datastream_conn_src_mysql.png)
@@ -285,7 +285,7 @@ With these steps completed, at this point we have the Source database is ready, 
 
 ## Step 4: Creating a Datastream Connection Profile to `BigQuery`
 
-In the bigQuery connection make sure you have the correct location based on the requirement. 
+In the bigQuery connection make sure you have the correct location based on the requirement. We are using `us-east1` across all resources on the workflow.
 
 | Field    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -331,7 +331,7 @@ module "datastream_mysql_to_bq_dataset" {
   stream_id = "ahmed-ds-stream"
 
   # The location where the Datastream resource will be created
-  location = "us-east1"
+  location = var.region
 
   # Labels are key/value pairs for tagging and organizing GCP resources
   labels = {
