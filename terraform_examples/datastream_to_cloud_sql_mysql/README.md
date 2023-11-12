@@ -206,7 +206,7 @@ FLUSH PRIVILEGES;
 
 ## Step 2: Creating a Destination `BigQuery` dataset
 
-We will also need a destination to retrived the data to, this will be a dataset. As we will be using `single_target_dataset` on the datastream, more about this can be found on the [datastream modules](https://github.com/ahmedzbyr/taealam/tree/master/tf_modules/datastream/datastream_stream) documentation.
+We will also need a destination to retrieve the data to, this will be a dataset. As we will be using `single_target_dataset` on the datastream, more about this can be found on the [datastream modules](https://github.com/ahmedzbyr/taealam/tree/master/tf_modules/datastream/datastream_stream) documentation.
 
 ```hcl
 # Resource definition for creating a Google BigQuery dataset
