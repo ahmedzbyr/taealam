@@ -18,6 +18,17 @@ graph LR
   style E fill:#ff9,stroke:#f90,stroke-width:2px
 ```
 
+- [Establishing a Datastream from Cloud SQL (MySQL) to BigQuery](#establishing-a-datastream-from-cloud-sql-mysql-to-bigquery)
+  - [Prerequisites](#prerequisites)
+  - [Step 1: Preparing Cloud SQL](#step-1-preparing-cloud-sql)
+    - [Setting up a CloudSQL MySQL Server Using Terraform](#setting-up-a-cloudsql-mysql-server-using-terraform)
+  - [Step 2: Creating a Destination `BigQuery` dataset](#step-2-creating-a-destination-bigquery-dataset)
+  - [Step 3: Creating a Datastream Connection Profile to `MySQL` server](#step-3-creating-a-datastream-connection-profile-to-mysql-server)
+  - [Step 4: Creating a Datastream Connection Profile to `BigQuery`](#step-4-creating-a-datastream-connection-profile-to-bigquery)
+  - [Step 5: Creating a Datastream Stream From  `MySQL` to `BigQuery`](#step-5-creating-a-datastream-stream-from--mysql-to-bigquery)
+  - [Loading Data on MySQL](#loading-data-on-mysql)
+
+
 ## Prerequisites
 
 To proceed, you'll need:
