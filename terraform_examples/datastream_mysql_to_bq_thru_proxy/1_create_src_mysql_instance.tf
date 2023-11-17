@@ -16,6 +16,7 @@ resource "google_sql_database_instance" "main" {
       enable_private_path_for_google_cloud_services = true
     }
 
+
     # Configuration for backups
     backup_configuration {
       enabled                        = true    # Enables backups

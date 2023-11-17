@@ -103,7 +103,7 @@ resource "google_datastream_connection_profile" "main" {
   dynamic "private_connectivity" {
     for_each = var.private_connectivity != null ? [var.private_connectivity] : []
     content {
-      private_connection = private_connectivity.value.private_connectivity
+      private_connection = private_connectivity.value
     }
   }
 }

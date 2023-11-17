@@ -21,9 +21,22 @@ resource "google_project_iam_member" "main" {
 
 
 # Data source to retrieve available compute zones in a specified region
-data "google_compute_zones" "get_avail_zones_from_reagion" {
+data "google_compute_zones" "get_avail_zones_from_region" {
   project = var.project # Project ID
   region  = var.region  # Region to fetch the compute zones from
+}
+
+# Data block to retrieve static IPs for Datastream in a specified region and project
+data "google_datastream_static_ips" "datastream_ips" {
+  location = var.region  # The region where your resources are located
+  project  = var.project # The Google Cloud project ID
+}
+
+
+# Get the default network information, this will be a var later on.
+data "google_compute_network" "main" {
+  project = var.project
+  name    = "default" # The name of the network.
 }
 
 # Resource for creating a Google Compute Engine instance
@@ -33,7 +46,7 @@ resource "google_compute_instance" "main" {
   machine_type = "n2-standard-2"               # Machine type for the instance
 
   # Selects the first available zone from the fetched compute zones
-  zone = data.google_compute_zones.get_avail_zones_from_reagion.names[0]
+  zone = data.google_compute_zones.get_avail_zones_from_region.names[0]
   tags = ["datastream", "cloud-sql-proxy"] # Tags to identify and categorize the instance
 
   # Configuration for the boot disk of the instance
@@ -53,7 +66,7 @@ resource "google_compute_instance" "main" {
 
   # Network interface configuration, attaching the instance to the 'default' network
   network_interface {
-    network = "default"
+    network = data.google_compute_network.main.id
   }
 
   # Metadata to describe the instance's purpose and use
@@ -62,16 +75,16 @@ resource "google_compute_instance" "main" {
     use     = "cloud-sql-proxy"
   }
 
-  # Startup script to install and run Cloud SQL Proxy
+  #Startup script to install and run Cloud SQL Proxy
   metadata_startup_script = <<-EOF
-  echo -e "Downloading cloud-sql-proxy script";
-  echo -e "----------------------------------";
-  curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.7.2/cloud-sql-proxy.linux.amd64; 
-  echo -e "Update permissions on the script.";
-  chmod +x cloud-sql-proxy; 
-  echo -e "Running the script to connection \"${google_sql_database_instance.main.connection_name}\" node";
-  ./cloud-sql-proxy -a 0.0.0.0 ${var.project}:${var.region}:${google_sql_database_instance.main.connection_name}
-  EOF 
+    echo -e "Downloading cloud-sql-proxy script";
+    echo -e "----------------------------------";
+    curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.7.2/cloud-sql-proxy.linux.amd64; 
+    echo -e "Update permissions on the script.";
+    chmod +x cloud-sql-proxy; 
+    echo -e "Running the script to connection \"${google_sql_database_instance.main.connection_name}\" node";
+    ./cloud-sql-proxy -a 0.0.0.0 --private-ip ${google_sql_database_instance.main.connection_name}
+    EOF 
 
   # Service account configuration for the instance
   service_account {
