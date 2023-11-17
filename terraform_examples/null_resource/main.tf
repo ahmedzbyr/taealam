@@ -5,11 +5,11 @@
 
 locals {
   vars_a = "XYZ"
-  vars_b = "ABC" 
+  vars_b = "ABC"
 }
 
 resource "null_resource" "check_for_information" {
-    count = local.vars_a == local.vars_b ? 0 : "ERROR, vars_a and vars_b CANNOT be same."
+  count = local.vars_a == local.vars_b ? 0 : "ERROR, vars_a and vars_b CANNOT be same."
 }
 
 #

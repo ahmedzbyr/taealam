@@ -1,9 +1,9 @@
 module "create_private_connection_to_instance" {
   source                = "git::https://github.com/ahmedzbyr/taealam.git///tf_modules/datastream/datastream_private_connection"
-  project               = var.project         # Project where the connection profile will be created
-  display_name          = "mysql-priv-connec" # Display name for the connection profile
-  location              = var.region          # Location of the connection profile
-  private_connection_id = "mysql-priv-connec" # Unique identifier for the connection profile
+  project               = var.project                           # Project where the connection profile will be created
+  display_name          = "datastream-mysql-private-connection" # Display name for the connection profile
+  location              = var.region                            # Location of the connection profile
+  private_connection_id = "datastream-mysql-private-connection" # Unique identifier for the connection profile
 
   labels = {
     key = "datastream"
@@ -11,7 +11,7 @@ module "create_private_connection_to_instance" {
 
   vpc_peering_config = {
     vpc    = data.google_compute_network.main.id # VPC network to peer with
-    subnet = "172.31.200.0/29"                   # IP range for the subnet
+    subnet = var.private_connection_cidr         # IP range for the subnet
   }
 }
 
@@ -27,12 +27,12 @@ resource "google_compute_firewall" "main" {
 
   # Specifies the rule to allow incoming traffic
   allow {
-    protocol = "tcp"            # The protocol for which the rule applies
-    ports    = ["3306", "5432"] # The port number (MySQL/PostgreSQL default port) to be allowed 
+    protocol = "tcp"              # The protocol for which the rule applies
+    ports    = var.ports_to_allow # The port number (MySQL/PostgreSQL default port) to be allowed 
   }
 
   # The source IP ranges that will be allowed through the firewall
-  source_ranges = ["172.31.200.0/29"]
+  source_ranges = [var.private_connection_cidr]
 
   # Targets the rule to instances tagged with these values
   target_tags = ["datastream", "cloud-sql-proxy"]
@@ -40,12 +40,11 @@ resource "google_compute_firewall" "main" {
 
 
 module "create_connection_profile_mysql" {
-  #source                = "git::https://github.com/ahmedzbyr/taealam.git//tf_modules/datastream/datastream_connection_profile"
-  source                = "../../tf_modules/datastream/datastream_connection_profile"
-  project               = var.project         # Project where the connection profile will be created
-  display_name          = "ahmd-connec-mysql" # Display name for the connection profile
-  location              = var.region          # Location of the connection profile
-  connection_profile_id = "ahmd-connec-mysql" # Unique identifier for the connection profile
+  source                = "git::https://github.com/ahmedzbyr/taealam.git//tf_modules/datastream/datastream_connection_profile"
+  project               = var.project                              # Project where the connection profile will be created
+  display_name          = "datastream-connection-csql-proxy-mysql" # Display name for the connection profile
+  location              = var.region                               # Location of the connection profile
+  connection_profile_id = "datastream-connection-csql-proxy-mysql" # Unique identifier for the connection profile
 
   labels = {
     key = "datastream"
@@ -53,7 +52,6 @@ module "create_connection_profile_mysql" {
 
   mysql_profile = {
     hostname = google_compute_instance.main.network_interface.0.network_ip # (Required) Hostname for the MySQL connection.
-    port     = "3306"                                                      # (Optional) Port for the MySQL connection, default value is 3306.
     username = var.user                                                    # (Required) Username for the MySQL connection.
   }
 

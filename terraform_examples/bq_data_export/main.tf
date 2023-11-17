@@ -1,9 +1,9 @@
 resource "google_bigquery_job" "job" {
-  job_id     = "job_extraction_table_xyz"
+  job_id = "job_extraction_table_xyz"
 
   extract {
     destination_uris = ["gs://my-bq-export-bucket/extract"]
-    
+
     source_table {
       project_id = "my-project"
       dataset_id = "my-dataset-id"
@@ -24,7 +24,7 @@ resource "google_bigquery_data_transfer_config" "query_config" {
 
   params = {
     destination_table_name_template = "my-table-name"
-    
+
     data_path_template = "gs://my-bucket-export/bq-export/table-name/*.csv"
     write_disposition  = "APPEND"
     file_format        = "CSV"

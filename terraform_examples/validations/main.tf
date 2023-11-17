@@ -34,7 +34,7 @@ variable "access_map" {
   description = "Access map for a given resource"
   type        = map(any)
   default = {
-    "permission"     = "ADMIN"
+    "permission"      = "ADMIN"
     "resource"        = "GCS"
     "service_account" = "sa-permissions@gproject.iam.gserviceaccount.com"
   }
@@ -48,10 +48,10 @@ variable "access_map" {
 
 variable "location" {
   description = "List of location which can be set for this resource."
-  type = string
-  default = "US"
+  type        = string
+  default     = "US"
   validation {
-    condition = contains(["US", "EU", "ASIS"], var.location)
+    condition     = contains(["US", "EU", "ASIS"], var.location)
     error_message = "Location can be US, EU, ASIA only"
   }
 }

@@ -79,7 +79,7 @@ resource "google_compute_instance" "main" {
   metadata_startup_script = <<-EOF
     echo -e "Downloading cloud-sql-proxy script";
     echo -e "----------------------------------";
-    curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.7.2/cloud-sql-proxy.linux.amd64; 
+    curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/${var.cloud_sql_proxy_version}/cloud-sql-proxy.linux.amd64; 
     echo -e "Update permissions on the script.";
     chmod +x cloud-sql-proxy; 
     echo -e "Running the script to connection \"${google_sql_database_instance.main.connection_name}\" node";

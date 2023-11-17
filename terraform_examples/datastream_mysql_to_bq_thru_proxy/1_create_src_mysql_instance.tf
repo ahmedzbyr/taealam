@@ -26,8 +26,7 @@ resource "google_sql_database_instance" "main" {
     }
   }
   deletion_protection = "false" # Disables deletion protection, use with caution
-
-  depends_on = [google_service_networking_connection.main]
+  depends_on          = [google_service_networking_connection.main]
 }
 
 # Resource to create a SQL user
