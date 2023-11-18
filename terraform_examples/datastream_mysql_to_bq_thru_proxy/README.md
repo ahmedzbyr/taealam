@@ -1,6 +1,14 @@
-# Establishing a Datastream from Cloud SQL (MySQL) to BigQuery (Private Connections)
+# Establishing a Datastream from Cloud SQL (MySQL) to BigQuery Through Cloud Auth Proxy
 
-Work in progress.
+**Work in progress.**
+
+```
+[CloudSQL] -- > [Cloud Auth Proxy]      [Datastream] --[connProfile]--> [BigQuery]
+                        ^                     |    
+                        |                     |
+                        \----[privateConn]----/
+                        \----[connProfile]----/  
+```
 
 - Create a private network for the CloudSQL and GCE Instance. 
 - Setup peering on the network so that the node can connect to the CloudSQL (MySQL) server.
