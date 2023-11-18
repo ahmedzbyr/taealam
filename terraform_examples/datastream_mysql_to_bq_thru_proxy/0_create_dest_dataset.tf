@@ -15,5 +15,5 @@ resource "google_bigquery_dataset" "dataset" {
   }
 
   # If set to true, this ensures that all contents within the dataset will be deleted upon the dataset's destruction
-  delete_contents_on_destroy = true # Use with caution to prevent accidental data loss
+  delete_contents_on_destroy = true # Use with caution to prevent accidental data loss here this is true for TESTING ONLY
 }

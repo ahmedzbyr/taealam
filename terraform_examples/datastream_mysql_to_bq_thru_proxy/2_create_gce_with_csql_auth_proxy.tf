@@ -11,7 +11,7 @@ resource "google_project_iam_member" "main" {
 
   # The IAM role to be assigned to the service account
   # This is required to grants permissions for managing Cloud SQL resources, 
-  # by running the cloud auth proxy command.
+  # by running the cloud auth proxy command. Else we get an NOT AUTHORIZED error from CloudSQL.
   role = "roles/cloudsql.editor"
 
   # The member to whom the role is assigned

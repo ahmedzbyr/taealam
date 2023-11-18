@@ -1,8 +1,10 @@
 # Resource for creating a Google Compute VPC network
 resource "google_compute_network" "main" {
-  project                 = var.project            # Project this resource belongs in
-  name                    = "private-interconnect" # Name of the VPC network
-  auto_create_subnetworks = "false"                # Disables automatic subnetwork creation
+  project = var.project            # Project this resource belongs in
+  name    = "private-interconnect" # Name of the VPC network
+
+  # Disables automatic subnetwork creation we will create it for specific region below
+  auto_create_subnetworks = "false"
 }
 
 # Resource for allocating a global private IP address for VPC peering
@@ -34,7 +36,7 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
 
 # Resource definition for a Google Compute Engine subnetwork we will be using this subnet to setup our proxy node.
 resource "google_compute_subnetwork" "subnetwork_purpose_private_nat" {
-  provider      = google-beta
+  provider      = google-beta                       # Using beta as the purpose PRIVATE is still in beta.
   project       = var.project                       # Specifies the project ID where the subnetwork will be created
   name          = "private-interconnect-subnetwork" # Sets the name of the subnetwork
   region        = var.region                        # Defines the region where the subnetwork will reside
@@ -44,8 +46,11 @@ resource "google_compute_subnetwork" "subnetwork_purpose_private_nat" {
   # is intended for use with private Google Access and instances without external IP addresses
   purpose = "PRIVATE"
 
-  private_ip_google_access = true                           # When enabled, VMs in this subnetwork without external IP addresses can access Google APIs and services by using Private Google Access.
-  network                  = google_compute_network.main.id # Links this subnetwork to the specified network resource's ID
+  # When enabled, VMs in this subnetwork without external IP addresses can access Google APIs and services by using Private Google Access.
+  private_ip_google_access = true
+
+  # Links this subnetwork to the specified network resource's ID
+  network = google_compute_network.main.id
 }
 
 # Resource for creating a firewall rule for Google Compute Engine which will get requests from datastream private connection.
@@ -96,14 +101,17 @@ resource "google_compute_firewall" "main" {
 
 # Resource definition for a Google Compute Engine router
 resource "google_compute_router" "router" {
-  project = var.project                                                     # The project ID where the router will be created
-  name    = "datastream-router"                                             # The name of the router
-  region  = google_compute_subnetwork.subnetwork_purpose_private_nat.region # The region where the router will be created, taken from the previously defined subnetwork
-  network = google_compute_network.main.id                                  # The network ID to which the router belongs
+  project = var.project         # The project ID where the router will be created
+  name    = "datastream-router" # The name of the router
+
+  # The region where the router will be created, taken from the previously defined subnetwork
+  region  = google_compute_subnetwork.subnetwork_purpose_private_nat.region
+  network = google_compute_network.main.id # The network ID to which the router belongs
 
   # BGP configuration block for the router
   bgp {
-    asn = 64514 # The Autonomous System Number (ASN) for BGP to use. This should be a private ASN (64512 - 65534 for 16-bit ASNs)
+    asn = 64514 # The Autonomous System Number (ASN) for BGP to use. 
+    # This should be a private ASN (64512 - 65534 for 16-bit ASNs)
   }
 }
 
@@ -119,6 +127,7 @@ resource "google_compute_router_nat" "nat" {
 
   # Source subnetwork IP ranges to include in NAT. 
   # 'ALL_SUBNETWORKS_ALL_IP_RANGES' indicates that all primary and secondary ranges in all subnetworks in the region are allowed
+  # For better router configuration we can setup access to specific subnets as well. 
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 
   # Logging configuration block
