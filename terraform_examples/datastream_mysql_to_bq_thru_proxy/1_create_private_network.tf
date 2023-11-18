@@ -70,28 +70,61 @@ resource "google_compute_firewall" "main" {
   target_tags = ["datastream", "cloud-sql-proxy"]
 }
 
+# Resource for creating a firewall rule for Google Compute Engine which will get requests from datastream private connection.
+resource "google_compute_firewall" "main" {
+  project = var.project                          # The project ID where the firewall rule will be created
+  name    = "datastream-inbound-connections-ssh" # Name of the firewall rule
+  network = google_compute_network.main.id       # The network to which the rule applies
 
+  # A brief description of the firewall rule
+  description = "Creates firewall rule for ssh targeting tagged instances"
+
+  # Specifies the rule to allow incoming traffic
+  allow {
+    protocol = "tcp" # The protocol for which the rule applies
+    ports    = "22"  # ssh to be allowed 
+  }
+
+  # The source IP ranges that will be allowed through the firewall
+  # This is here for testing and needs to be a specific IP range. 
+  source_ranges = "0.0.0.0/0"
+
+  # Targets the rule to instances tagged with these values
+  target_tags = ["datastream", "cloud-sql-proxy"]
+}
+
+
+# Resource definition for a Google Compute Engine router
 resource "google_compute_router" "router" {
-  project = var.project
-  name    = "datastream-router"
-  region  = google_compute_subnetwork.subnetwork_purpose_private_nat.region
-  network = google_compute_network.main.id
+  project = var.project                                                     # The project ID where the router will be created
+  name    = "datastream-router"                                             # The name of the router
+  region  = google_compute_subnetwork.subnetwork_purpose_private_nat.region # The region where the router will be created, taken from the previously defined subnetwork
+  network = google_compute_network.main.id                                  # The network ID to which the router belongs
 
+  # BGP configuration block for the router
   bgp {
-    asn = 64514
+    asn = 64514 # The Autonomous System Number (ASN) for BGP to use. This should be a private ASN (64512 - 65534 for 16-bit ASNs)
   }
 }
 
+# Resource definition for a NAT service on the Google Compute Engine router
 resource "google_compute_router_nat" "nat" {
-  project                            = var.project
-  name                               = "datastream-router-nat"
-  router                             = google_compute_router.router.name
-  region                             = google_compute_router.router.region
-  nat_ip_allocate_option             = "AUTO_ONLY"
+  project = var.project                         # The project ID where the NAT will be created
+  name    = "datastream-router-nat"             # The name of the NAT service
+  router  = google_compute_router.router.name   # The router name where the NAT will reside
+  region  = google_compute_router.router.region # The region of the router
+
+  # NAT IP allocation option set to automatically allocate NAT IPs
+  nat_ip_allocate_option = "AUTO_ONLY"
+
+  # Source subnetwork IP ranges to include in NAT. 
+  # 'ALL_SUBNETWORKS_ALL_IP_RANGES' indicates that all primary and secondary ranges in all subnetworks in the region are allowed
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 
+  # Logging configuration block
   log_config {
-    enable = true
-    filter = "ERRORS_ONLY"
+    enable = true          # If logging should be enabled for the NAT
+    filter = "ERRORS_ONLY" # Log level filter, which here is set to log only errors
   }
 }
+
