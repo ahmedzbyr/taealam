@@ -10,17 +10,17 @@ module "create_private_connection_to_instance" {
   }
 
   vpc_peering_config = {
-    vpc    = data.google_compute_network.main.id # VPC network to peer with
-    subnet = var.private_connection_cidr         # IP range for the subnet
+    vpc    = google_compute_network.main.id # VPC network to peer with
+    subnet = var.private_connection_cidr    # IP range for the subnet
   }
 }
 
 
 # Resource for creating a firewall rule in Google Compute Engine
 resource "google_compute_firewall" "main" {
-  project = var.project                         # The project ID where the firewall rule will be created
-  name    = "datastream-inbound-connections"    # Name of the firewall rule
-  network = data.google_compute_network.main.id # The network to which the rule applies
+  project = var.project                      # The project ID where the firewall rule will be created
+  name    = "datastream-inbound-connections" # Name of the firewall rule
+  network = google_compute_network.main.id   # The network to which the rule applies
 
   # A brief description of the firewall rule
   description = "Creates firewall rule targeting tagged instances"

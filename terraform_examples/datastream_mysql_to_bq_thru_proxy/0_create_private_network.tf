@@ -6,6 +6,7 @@ resource "google_compute_network" "main" {
 }
 
 # Resource for allocating a global private IP address for VPC peering
+# Internal IP address ranges that are allocated for services private connection
 resource "google_compute_global_address" "private_ip_address" {
   project       = var.project                       # Project this resource belongs in
   name          = "private-interconnect-ip-address" # Name for the global address resource
@@ -29,4 +30,13 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
   network              = google_compute_network.main.name                  # Network in which the routes are configured
   import_custom_routes = true                                              # Allows importing custom routes into the network peering
   export_custom_routes = true                                              # Allows exporting custom routes from the network peering
+}
+
+resource "google_compute_subnetwork" "subnetwork_purpose_private_nat" {
+  project       = var.project
+  name          = "subnet-purpose-test-subnetwork"
+  region        = var.region
+  ip_cidr_range = "192.168.1.0/24"
+  purpose       = "PRIVATE_RFC_1918"
+  network       = google_compute_network.main.id
 }

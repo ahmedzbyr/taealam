@@ -26,18 +26,59 @@ data "google_compute_zones" "get_avail_zones_from_region" {
   region  = var.region  # Region to fetch the compute zones from
 }
 
-# Data block to retrieve static IPs for Datastream in a specified region and project
-data "google_datastream_static_ips" "datastream_ips" {
-  location = var.region  # The region where your resources are located
-  project  = var.project # The Google Cloud project ID
-}
+# # Data block to retrieve static IPs for Datastream in a specified region and project
+# data "google_datastream_static_ips" "datastream_ips" {
+#   location = var.region  # The region where your resources are located
+#   project  = var.project # The Google Cloud project ID
+# }
 
 
-# Get the default network information, this will be a var later on.
-data "google_compute_network" "main" {
-  project = var.project
-  name    = "default" # The name of the network.
-}
+# # Get the default network information, this will be a var later on.
+# data "google_compute_network" "main" {
+#   project = var.project
+#   name    = "default" # The name of the network.
+# }
+
+# # Data source for a Google Compute Engine subnetwork
+# # Fetches data about an existing subnetwork within a specified project and region
+# data "google_compute_subnetwork" "my_subnetwork" {
+#   project = var.project                           # The project ID where the subnetwork is located
+#   name    = data.google_compute_network.main.name # The name of the subnetwork, fetched from the `google_compute_network.main` data source
+#   region  = var.region                            # The region where the subnetwork is located
+# }
+
+# # Resource for a Google Compute Engine router
+# # Creates a router within a specified project, region, and network
+# resource "google_compute_router" "router" {
+#   project = var.project                                         # The project ID where the router will be created
+#   name    = "datastream-router"                                 # The name of the router
+#   region  = data.google_compute_subnetwork.my_subnetwork.region # The region where the router will be created, derived from the subnetwork data
+#   network = data.google_compute_network.main.id                 # The network ID to which the router belongs, fetched from the `google_compute_network.main` data source
+
+#   # BGP configuration for the router
+#   bgp {
+#     asn = 64514 # The Autonomous System Number (ASN) for BGP to use
+#   }
+# }
+
+# # Resource for a Google Compute Engine router NAT
+# # Creates a NAT gateway on the router to allow instances without external IP addresses to access the internet
+# resource "google_compute_router_nat" "nat" {
+#   project                            = var.project                         # The project ID where the NAT will be created
+#   name                               = "datastream-router-nat"             # The name of the NAT service
+#   router                             = google_compute_router.router.name   # The name of the router on which to create the NAT service
+#   region                             = google_compute_router.router.region # The region where the NAT will be created
+#   nat_ip_allocate_option             = "AUTO_ONLY"                         # The option for allocating NAT IPs, "AUTO_ONLY" for automatic allocation
+#   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"     # Configures NAT for all IP ranges in all subnetworks
+
+#   # Logging configuration for the NAT service
+#   log_config {
+#     enable = true          # Enables logging
+#     filter = "ERRORS_ONLY" # Sets logging to include only errors
+#   }
+# }
+
+
 
 # Resource for creating a Google Compute Engine instance
 resource "google_compute_instance" "main" {
@@ -66,7 +107,8 @@ resource "google_compute_instance" "main" {
 
   # Network interface configuration, attaching the instance to the 'default' network
   network_interface {
-    network = data.google_compute_network.main.id
+    network    = google_compute_network.main.self_link
+    subnetwork = google_compute_subnetwork.subnetwork_purpose_private_nat.self_link
   }
 
   # Metadata to describe the instance's purpose and use
@@ -75,15 +117,19 @@ resource "google_compute_instance" "main" {
     use     = "cloud-sql-proxy"
   }
 
-  #Startup script to install and run Cloud SQL Proxy
+  # Startup script to install and run Cloud SQL Proxy
+  # https://cloud.google.com/sql/docs/mysql/connect-auth-proxy#start-proxy
+  # https://stackoverflow.com/a/62478143 <- Need to make use of this here, so that it is moved to systemd
   metadata_startup_script = <<-EOF
     echo -e "Downloading cloud-sql-proxy script";
     echo -e "----------------------------------";
     curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/${var.cloud_sql_proxy_version}/cloud-sql-proxy.linux.amd64; 
     echo -e "Update permissions on the script.";
     chmod +x cloud-sql-proxy; 
+    # echo -e "Installing MySQL Client for Deb";
+    # apt-get install default-mysql-client -y; 
     echo -e "Running the script to connection \"${google_sql_database_instance.main.connection_name}\" node";
-    ./cloud-sql-proxy -a 0.0.0.0 --private-ip ${google_sql_database_instance.main.connection_name}
+    ./cloud-sql-proxy --address 0.0.0.0  --port 3306 --private-ip ${google_sql_database_instance.main.connection_name} 
     EOF 
 
   # Service account configuration for the instance
