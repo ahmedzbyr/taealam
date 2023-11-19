@@ -4,6 +4,9 @@
 
 Welcome back to our series on datastream workflows! In our [previous article](https://ahmedzbyr.gitlab.io/gcp/datastream_mysql-bq/), we explored the basics of setting up a datastream workflow. Today, we're diving deeper by implementing a datastream from MySQL to BigQuery, utilizing the CloudSQL Proxy. This approach is particularly relevant in scenarios where CloudSQL is confined to a private network, making direct connections via external IP unfeasible. We'll guide you through the process of establishing a secure connection to CloudSQL using a proxy node equipped with the CloudSQL Auth Proxy binary, mirroring a common setup in many organizations where direct access to CloudSQL is restricted.
 
+You can find complete terraform on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/datastream_mysql_to_bq_thru_proxy).
+
+
 `Source Image: Google`
 ![Proxy](https://cloud.google.com/static/datastream/docs/images/reverse-proxy-csql.png)
 
