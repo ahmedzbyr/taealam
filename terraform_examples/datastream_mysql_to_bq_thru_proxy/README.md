@@ -179,13 +179,13 @@ resource "google_compute_firewall" "ssh" {
 
   # Specifies the rule to allow incoming traffic
   allow {
-    protocol = "tcp" # The protocol for which the rule applies
-    ports    = "22"  # ssh to be allowed 
+    protocol = "tcp"  # The protocol for which the rule applies
+    ports    = ["22"] # ssh to be allowed 
   }
 
   # The source IP ranges that will be allowed through the firewall
   # This is here for testing and needs to be a specific IP range. 
-  source_ranges = "0.0.0.0/0"
+  source_ranges = ["0.0.0.0/0"]
 
   # Targets the rule to instances tagged with these values
   target_tags = ["datastream", "cloud-sql-proxy"]
