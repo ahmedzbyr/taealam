@@ -76,7 +76,7 @@ resource "google_compute_firewall" "main" {
 }
 
 # Resource for creating a firewall rule for Google Compute Engine which will get requests from datastream private connection.
-resource "google_compute_firewall" "main" {
+resource "google_compute_firewall" "ssh" {
   project = var.project                          # The project ID where the firewall rule will be created
   name    = "datastream-inbound-connections-ssh" # Name of the firewall rule
   network = google_compute_network.main.id       # The network to which the rule applies
