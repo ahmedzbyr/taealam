@@ -1,6 +1,4 @@
-# Establishing a Datastream from Cloud SQL (MySQL) to BigQuery Through Cloud Auth Proxy
-
-**Work in progress.**
+# Setting Up a Datastream Workflow: Cloud SQL (MySQL) to BigQuery via Cloud Auth Proxy
 
 Welcome back to our series on datastream workflows! In our [previous article](https://ahmedzbyr.gitlab.io/gcp/datastream_mysql-bq/), we explored the basics of setting up a datastream workflow. Today, we're diving deeper by implementing a datastream from MySQL to BigQuery, utilizing the CloudSQL Proxy. This approach is particularly relevant in scenarios where CloudSQL is confined to a private network, making direct connections via external IP unfeasible. We'll guide you through the process of establishing a secure connection to CloudSQL using a proxy node equipped with the CloudSQL Auth Proxy binary, mirroring a common setup in many organizations where direct access to CloudSQL is restricted.
 
@@ -12,7 +10,7 @@ You can find complete terraform on [GitHub](https://github.com/ahmedzbyr/taealam
 
 Below are the steps we will use to setup the Infra for our Datastream CDC Workflow.
 
-- [Establishing a Datastream from Cloud SQL (MySQL) to BigQuery Through Cloud Auth Proxy](#establishing-a-datastream-from-cloud-sql-mysql-to-bigquery-through-cloud-auth-proxy)
+- [Setting Up a Datastream Workflow: Cloud SQL (MySQL) to BigQuery via Cloud Auth Proxy](#setting-up-a-datastream-workflow-cloud-sql-mysql-to-bigquery-via-cloud-auth-proxy)
   - [Step 1: Create a BigQuery Dataset for our Destination](#step-1-create-a-bigquery-dataset-for-our-destination)
   - [Step 2: Create a Private network for the CloudSQL and GCE instance](#step-2-create-a-private-network-for-the-cloudsql-and-gce-instance)
   - [Step 3: Setup the firewall rules required for the network to communicate](#step-3-setup-the-firewall-rules-required-for-the-network-to-communicate)
