@@ -92,7 +92,7 @@ resource "google_service_networking_connection" "main" {
 }
 ```
 
-![datastream_pxy_private_interconnect_priv_service_access_service](images/datastream_pxy_private_interconnect_priv_service_access_service.png)
+![datastream_pxy_private_interconnect_priv_service_access_service](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_interconnect_priv_service_access_service.png)
 
 4. **Network Peering Routes Configuration**: Google Cloud VPC Network Peering is a powerful feature that links two Virtual Private Cloud (VPC) networks, allowing resources within each network to interact seamlessly. In our setup, we're utilizing this capability to facilitate communication between the GCE instance and the Cloud SQL instance. Additionally, this setup enables:
    - Communication across all subnets using internal IPv4 addresses.
@@ -109,7 +109,7 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
 }
 ```
 
-![datastream_pxy_private_interconnect_vpc_peering](images/datastream_pxy_private_interconnect_vpc_peering.png)
+![datastream_pxy_private_interconnect_vpc_peering](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_interconnect_vpc_peering.png)
 
 5. **Subnetwork for Proxy Node**: Creates a subnetwork named `private-interconnect-subnetwork` with a specified IP range, intended for private access and this is the network used for the GCE instance to setup the Cloud SQL Auth Proxy.
 
@@ -134,7 +134,7 @@ resource "google_compute_subnetwork" "subnetwork_purpose_private_nat" {
 }
 ```
 
-![datastream_pxy_private_interconnect_nw_subnet](images/datastream_pxy_private_interconnect_nw_subnet.png)
+![datastream_pxy_private_interconnect_nw_subnet](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_interconnect_nw_subnet.png)
 
 ## Step 3: Setup the firewall rules required for the network to communicate
 
@@ -166,6 +166,17 @@ resource "google_compute_firewall" "main" {
 }
 ```
 
+:books: **NOTE:** Have an available IP range (with a CIDR block of /29) on the VPC network. This can't be an IP range that already exists as a subnet, a Private Service Connection pre-allocated IP range, or any sort of pre-allocated route IP range. Datastream uses this IP range to create a subnet so that it can communicate with the source database. The following table describes valid IP ranges for Private IP Address. We will be using the `172.31.200.0/29` from the `172.16.0.0/12` range. 
+
+
+| Range          | Description                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| 10.0.0.0/8     | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
+| 172.16.0.0/12  | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
+| 192.168.0.0/16 | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
+
+
+
 2. **Firewall Rule** ssh (Optional): We also have a inbound `ssh` connection to reach the GCE instance over `ssh`. [ **NOTE:** This is optional for testing as in a org environment we would not set a rules `0.0.0.0/0` like we have done here]
 
 ```hcl
@@ -193,7 +204,7 @@ resource "google_compute_firewall" "ssh" {
 }
 ```
 
-![datastream_pxy_private_interconnect_firewall](images/datastream_pxy_private_interconnect_firewall.png)
+![datastream_pxy_private_interconnect_firewall](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_interconnect_firewall.png)
 
 3. **Setting Up Routing** (Optional): Optional Configuration for Updates: This setup is optional and primarily necessary if the GCE instance requires internet access for updates or software installations.
 
@@ -215,7 +226,7 @@ resource "google_compute_router" "router" {
 }
 ```
 
-![datastream_pxy_cloud_router](images/datastream_pxy_cloud_router.png)
+![datastream_pxy_cloud_router](https://ahmedzbyr.gitlab.io/images/datastream_pxy_cloud_router.png)
 
 ```hcl
 # Resource definition for a NAT service on the Google Compute Engine router
@@ -241,9 +252,21 @@ resource "google_compute_router_nat" "nat" {
 }
 ```
 
-![datastream_pxy_cloud_nat](images/datastream_pxy_cloud_nat.png)
+![datastream_pxy_cloud_nat](https://ahmedzbyr.gitlab.io/images/datastream_pxy_cloud_nat.png)
 
 ## Step 4: Establishing the CloudSQL (MySQL) Instance on a Private Network
+
+Configure a Cloud SQL for MySQL database
+
+- **Activating Binary Logging**:  For activating binary logging in Cloud SQL for MySQL, refer to the guide on [Point-in-Time Recovery Activation](https://cloud.google.com/sql/docs/mysql/backup-recovery/pitr#enablingpitr), if we are doing this manually, this is here just for information. 
+
+- **Establishing a Datastream User Account**: To set up a user account for Datastream, execute these MySQL commands or use terraform as we have done here. 
+
+```sql
+CREATE USER 'datastream'@'%' IDENTIFIED BY '[YOUR_PASSWORD]';
+GRANT REPLICATION SLAVE, SELECT, REPLICATION CLIENT ON *.* TO 'datastream'@'%';
+FLUSH PRIVILEGES;
+```
 
 1. **Create MySQL Instance**: With our network now fully prepared, it's time to set up our working environment. The first task at hand is to create the CloudSQL instance, which we will configure to operate on the private global network.
 
@@ -266,7 +289,6 @@ resource "google_sql_database_instance" "main" {
       enable_private_path_for_google_cloud_services = true
     }
 
-
     # Configuration for backups
     backup_configuration {
       enabled                        = true    # Enables backups
@@ -280,7 +302,12 @@ resource "google_sql_database_instance" "main" {
 }
 ```
 
-![datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw](images/datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw.png)
+**NOTE**: We need to make sure the `binary_log_enabled` is enabled for MySQL Instance, check `backup_configuration` in the above terraform.
+
+![Enabled Binary Logs](https://ahmedzbyr.gitlab.io/images/datastream_enable_binlogs.png)
+
+
+![datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw](https://ahmedzbyr.gitlab.io/images/datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw.png)
 
 2. **Create User**: After the instance is operational, our next step is to create a user account on it. This user will play a crucial role in facilitating communication with the database for the purpose of data migration via datastream.
 
@@ -290,8 +317,10 @@ resource "google_sql_user" "users" {
   project  = var.project                            # Project ID
   name     = var.user                               # Name of the SQL user
   instance = google_sql_database_instance.main.name # Associate user with the SQL instance
-  host     = "%"                                    # Allow connection from any host
-  password = random_string.random.result            # Password for the SQL user, randomly generated
+  
+  # This in a non-test environment should be the IP of the proxy node. 
+  host     = "%"                          # Allow connection from any host
+  password = random_string.random.result  # Password for the SQL user, randomly generated
 }
 ```
 
@@ -408,18 +437,18 @@ Here is the command which runs the proxy service, this should be eventually [mov
 ./cloud-sql-proxy --address 0.0.0.0  --port 3306 --private-ip ${google_sql_database_instance.main.connection_name} 
 ```
 
-![datastream_pxy_gce_proxy_node](images/datastream_pxy_gce_proxy_node.png)
+![datastream_pxy_gce_proxy_node](https://ahmedzbyr.gitlab.io/images/datastream_pxy_gce_proxy_node.png)
 
 ## Step 6: Create Private connection to GCE proxy node.
 
-Private connectivity is the term used to describe a special, direct link that connects your Virtual Private Cloud (VPC) network with Datastream's own private network. This arrangement enables Datastream to seamlessly communicate with your resources via internal IP addresses. Choosing private connectivity means you're setting up a private, secure channel on the Datastream network, exclusively for your use, without sharing it with other customers.
+Private connectivity is the term used to describe a special, direct link that connects our Virtual Private Cloud (VPC) network with Datastream's own private network. This arrangement enables Datastream to seamlessly communicate with our resources via internal IP addresses. Choosing private connectivity means we are setting up a private, secure channel on the Datastream network, exclusively for our use, without sharing it with other customers.
 
 `Source Image: Google`
 ![Proxy](https://cloud.google.com/static/datastream/docs/images/reverse-proxy-csql.png)
 
-In scenarios where you're using Cloud SQL for MySQL or Cloud SQL for PostgreSQL with private IP addresses, it involves setting up a VPC peering connection. This connection is between your VPC network and the VPC network of the underlying Google services where your Cloud SQL instance is hosted.
+In scenarios where we are using **Cloud SQL for MySQL** with private IP addresses, it involves setting up a VPC peering connection. This connection is between our VPC network and the VPC network of the underlying Google services where our Cloud SQL instance is hosted.
 
-However, it's important to note that Datastream's network cannot directly peer with the private services network of Cloud SQL. Additionally, due to the non-transitive nature of VPC peering, a reverse proxy is necessary for Cloud SQL. This proxy serves as a crucial link, bridging the connection from Datastream to your specific Cloud SQL instance.
+However, it's important to note that Datastream's network cannot directly peer with the private services network of Cloud SQL. Additionally, due to the non-transitive nature of VPC peering, a reverse proxy is necessary for Cloud SQL. This proxy serves as a crucial link, bridging the connection from Datastream to our specific Cloud SQL instance.
 
 ```hcl
 module "create_private_connection_to_instance" {
@@ -442,7 +471,7 @@ module "create_private_connection_to_instance" {
 
 For an in-depth understanding of the configuration parameters, you can refer to the [datastream module](https://github.com/ahmedzbyr/taealam/tree/master/tf_modules/datastream). Additionally, for further examples and practical applications, visit [GitHub repository](https://github.com/ahmedzbyr/taealam/tree/master/tf_modules/datastream/examples).
 
-![datastream_pxy_private_connection_to_proxy](images/datastream_pxy_private_connection_to_proxy.png)
+![datastream_pxy_private_connection_to_proxy](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_connection_to_proxy.png)
 
 ## Step 7: Create Connection Profile to the Source MySQL using Private connection.
 
@@ -559,10 +588,10 @@ For an in-depth understanding of the configuration parameters, you can refer to 
 
 With our workflow set up, it's time to test its functionality. This involves adding data to the source database in CloudMySQL. We'll start by creating a `customers` table and populating it with sample data, as illustrated in the accompanying image.
 
-![datastream_pxy_data_to_mysql_database](images/datastream_pxy_data_to_mysql_database.png)
+![datastream_pxy_data_to_mysql_database](https://ahmedzbyr.gitlab.io/images/datastream_pxy_data_to_mysql_database.png)
 
 ## Step 11: (TESTING) Checking Data in Destination BigQuery
 
 After successfully adding data to the source database, the next step is to confirm that this data is replicated to our destination BigQuery dataset. Ideally, this replication should occur almost instantaneously, allowing us to observe the data transfer in near-real time.
 
-![datastream_pxy_data_in_dest_bq_dataset](images/datastream_pxy_data_in_dest_bq_dataset.png)
+![datastream_pxy_data_in_dest_bq_dataset](https://ahmedzbyr.gitlab.io/images/datastream_pxy_data_in_dest_bq_dataset.png)
