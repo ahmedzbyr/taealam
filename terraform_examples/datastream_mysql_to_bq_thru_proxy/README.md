@@ -595,3 +595,7 @@ With our workflow set up, it's time to test its functionality. This involves add
 After successfully adding data to the source database, the next step is to confirm that this data is replicated to our destination BigQuery dataset. Ideally, this replication should occur almost instantaneously, allowing us to observe the data transfer in near-real time.
 
 ![datastream_pxy_data_in_dest_bq_dataset](https://ahmedzbyr.gitlab.io/images/datastream_pxy_data_in_dest_bq_dataset.png)
+
+This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, Oracle with a few minor adjustments to setting up the instance - the core process remains consistent. 
+
+For more information on the prereq configuration for the source databases please check [Configure Source Database](https://cloud.google.com/datastream/docs/sources) for more information.
