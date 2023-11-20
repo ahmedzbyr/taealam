@@ -1,24 +1,30 @@
 # Setting Up a Datastream Workflow: Cloud SQL (MySQL) to BigQuery via Cloud Auth Proxy
 
-Welcome back to our series on datastream workflows! In our [previous article](https://ahmedzbyr.gitlab.io/gcp/datastream_mysql-bq/), we explored the basics of setting up a datastream workflow. Today, we're diving deeper by implementing a datastream from MySQL to BigQuery, utilizing the CloudSQL Proxy. This approach is particularly relevant in scenarios where CloudSQL is confined to a private network, making direct connections via external IP unfeasible. We'll guide you through the process of establishing a secure connection to CloudSQL using a proxy node equipped with the CloudSQL Auth Proxy binary, mirroring a common setup in many organizations where direct access to CloudSQL is restricted.
+Welcome back to our series on datastream workflows! In our [previous article](https://ahmedzbyr.gitlab.io/gcp/datastream_mysql-bq/), we explored the basics of setting up a datastream workflow.
+
+Today, we're diving deeper by implementing a datastream from MySQL to BigQuery, utilizing the CloudSQL Proxy. This approach is particularly relevant in scenarios where CloudSQL is confined to a private network, making direct connections via external IP unfeasible. We'll guide you through the process of establishing a secure connection to CloudSQL using a proxy node equipped with the CloudSQL Auth Proxy binary, mirroring a common setup in many organizations where direct access to CloudSQL is restricted.
 
 You can find complete terraform on [GitHub](https://github.com/ahmedzbyr/taealam/tree/master/terraform_examples/datastream_mysql_to_bq_thru_proxy).
-
 
 `Source Image: Google`
 ![Proxy](https://cloud.google.com/static/datastream/docs/images/reverse-proxy-csql.png)
 
+## Overview
+
 Below are the steps we will use to setup the Infra for our Datastream CDC Workflow.
 
+![overview](https://ahmedzbyr.gitlab.io/images/datastream_mysql_to_bq_proxy.png)
+
 - [Setting Up a Datastream Workflow: Cloud SQL (MySQL) to BigQuery via Cloud Auth Proxy](#setting-up-a-datastream-workflow-cloud-sql-mysql-to-bigquery-via-cloud-auth-proxy)
+  - [Overview](#overview)
   - [Step 1: Create a BigQuery Dataset for our Destination](#step-1-create-a-bigquery-dataset-for-our-destination)
   - [Step 2: Create a Private network for the CloudSQL and GCE instance](#step-2-create-a-private-network-for-the-cloudsql-and-gce-instance)
   - [Step 3: Setup the firewall rules required for the network to communicate](#step-3-setup-the-firewall-rules-required-for-the-network-to-communicate)
   - [Step 4: Establishing the CloudSQL (MySQL) Instance on a Private Network](#step-4-establishing-the-cloudsql-mysql-instance-on-a-private-network)
-  - [Step 5: Create the GCE instance on private network (subnetwork).](#step-5-create-the-gce-instance-on-private-network-subnetwork)
-  - [Step 6: Create Private connection to GCE proxy node.](#step-6-create-private-connection-to-gce-proxy-node)
-  - [Step 7: Create Connection Profile to the Source MySQL using Private connection.](#step-7-create-connection-profile-to-the-source-mysql-using-private-connection)
-  - [Step 8: Create Connection Profile to the Destination BigQuery.](#step-8-create-connection-profile-to-the-destination-bigquery)
+  - [Step 5: Create the GCE instance on private network (subnetwork)](#step-5-create-the-gce-instance-on-private-network-subnetwork)
+  - [Step 6: Create Private connection to GCE proxy node](#step-6-create-private-connection-to-gce-proxy-node)
+  - [Step 7: Create Connection Profile to the Source MySQL using Private connection](#step-7-create-connection-profile-to-the-source-mysql-using-private-connection)
+  - [Step 8: Create Connection Profile to the Destination BigQuery](#step-8-create-connection-profile-to-the-destination-bigquery)
   - [Step 9: Create a Datastream stream to connection the source and destination](#step-9-create-a-datastream-stream-to-connection-the-source-and-destination)
   - [Step 10: (TESTING) Populating Data in CloudMySQL](#step-10-testing-populating-data-in-cloudmysql)
   - [Step 11: (TESTING) Checking Data in Destination BigQuery](#step-11-testing-checking-data-in-destination-bigquery)
@@ -166,16 +172,13 @@ resource "google_compute_firewall" "main" {
 }
 ```
 
-:books: **NOTE:** Have an available IP range (with a CIDR block of /29) on the VPC network. This can't be an IP range that already exists as a subnet, a Private Service Connection pre-allocated IP range, or any sort of pre-allocated route IP range. Datastream uses this IP range to create a subnet so that it can communicate with the source database. The following table describes valid IP ranges for Private IP Address. We will be using the `172.31.200.0/29` from the `172.16.0.0/12` range. 
-
+:books: **NOTE:** Have an available IP range (with a CIDR block of /29) on the VPC network. This can't be an IP range that already exists as a subnet, a Private Service Connection pre-allocated IP range, or any sort of pre-allocated route IP range. Datastream uses this IP range to create a subnet so that it can communicate with the source database. The following table describes valid IP ranges for Private IP Address. We will be using the `172.31.200.0/29` from the `172.16.0.0/12` range.
 
 | Range          | Description                                                          |
 | -------------- | -------------------------------------------------------------------- |
 | 10.0.0.0/8     | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
 | 172.16.0.0/12  | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
 | 192.168.0.0/16 | Private IP addresses [RFC 1918](https://tools.ietf.org/html/rfc1918) |
-
-
 
 2. **Firewall Rule** ssh (Optional): We also have a inbound `ssh` connection to reach the GCE instance over `ssh`. [ **NOTE:** This is optional for testing as in a org environment we would not set a rules `0.0.0.0/0` like we have done here]
 
@@ -258,9 +261,9 @@ resource "google_compute_router_nat" "nat" {
 
 Configure a Cloud SQL for MySQL database
 
-- **Activating Binary Logging**:  For activating binary logging in Cloud SQL for MySQL, refer to the guide on [Point-in-Time Recovery Activation](https://cloud.google.com/sql/docs/mysql/backup-recovery/pitr#enablingpitr), if we are doing this manually, this is here just for information. 
+- **Activating Binary Logging**:  For activating binary logging in Cloud SQL for MySQL, refer to the guide on [Point-in-Time Recovery Activation](https://cloud.google.com/sql/docs/mysql/backup-recovery/pitr#enablingpitr), if we are doing this manually, this is here just for information.
 
-- **Establishing a Datastream User Account**: To set up a user account for Datastream, execute these MySQL commands or use terraform as we have done here. 
+- **Establishing a Datastream User Account**: To set up a user account for Datastream, execute these MySQL commands or use terraform as we have done here.
 
 ```sql
 CREATE USER 'datastream'@'%' IDENTIFIED BY '[YOUR_PASSWORD]';
@@ -306,7 +309,6 @@ resource "google_sql_database_instance" "main" {
 
 ![Enabled Binary Logs](https://ahmedzbyr.gitlab.io/images/datastream_enable_binlogs.png)
 
-
 ![datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw](https://ahmedzbyr.gitlab.io/images/datastream_pxy_cloudsql_mysql_on_priv_interconnect_nw.png)
 
 2. **Create User**: After the instance is operational, our next step is to create a user account on it. This user will play a crucial role in facilitating communication with the database for the purpose of data migration via datastream.
@@ -340,7 +342,7 @@ resource "google_sql_database" "datastream_src_database" {
 
 ![Database Created](https://ahmedzbyr.gitlab.io/images/datastream_database_created.png)
 
-## Step 5: Create the GCE instance on private network (subnetwork).
+## Step 5: Create the GCE instance on private network (subnetwork)
 
 We're now ready to configure the GCE instance within the private network we established in the subnet. This setup will include the CloudSql Auth Proxy on the node, enabling it to handle requests directed to the database.
 
@@ -439,7 +441,7 @@ Here is the command which runs the proxy service, this should be eventually [mov
 
 ![datastream_pxy_gce_proxy_node](https://ahmedzbyr.gitlab.io/images/datastream_pxy_gce_proxy_node.png)
 
-## Step 6: Create Private connection to GCE proxy node.
+## Step 6: Create Private connection to GCE proxy node
 
 Private connectivity is the term used to describe a special, direct link that connects our Virtual Private Cloud (VPC) network with Datastream's own private network. This arrangement enables Datastream to seamlessly communicate with our resources via internal IP addresses. Choosing private connectivity means we are setting up a private, secure channel on the Datastream network, exclusively for our use, without sharing it with other customers.
 
@@ -473,7 +475,7 @@ For an in-depth understanding of the configuration parameters, you can refer to 
 
 ![datastream_pxy_private_connection_to_proxy](https://ahmedzbyr.gitlab.io/images/datastream_pxy_private_connection_to_proxy.png)
 
-## Step 7: Create Connection Profile to the Source MySQL using Private connection.
+## Step 7: Create Connection Profile to the Source MySQL using Private connection
 
 After establishing private connectivity, we can leverage it to connect to the proxy node. By providing the IP address of this proxy node, we create a direct link to the CloudSQL instance.
 
@@ -510,7 +512,7 @@ module "create_src_connection_profile_mysql" {
 }
 ```
 
-## Step 8: Create Connection Profile to the Destination BigQuery.
+## Step 8: Create Connection Profile to the Destination BigQuery
 
 Setting up a connection profile for BigQuery is straightforward and requires no complex configuration. This step simplifies the process of connecting to a BigQuery dataset in the subsequent phase.
 
@@ -598,6 +600,6 @@ After successfully adding data to the source database, the next step is to confi
 
 ---
 
-This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, Oracle with a few minor adjustments to setting up the instance - the core process remains consistent. 
+This marks the completion of our guide on establishing a Datastream connection from MySQL to BigQuery. The same principles can be applied to migrating data from PostgreSQL, Oracle with a few minor adjustments to setting up the instance - the core process remains consistent.
 
 For more information on the prereq configuration for the source databases please check [Configure Source Database](https://cloud.google.com/datastream/docs/sources) for more information.
